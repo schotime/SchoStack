@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AE81F184-1C67-4490-8BDD-4D4627704A49}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SchoStack.Web</RootNamespace>
+    <AssemblyName>SchoStack.Web</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentValidation">
+      <HintPath>..\packages\FluentValidation.3.3.1.0\lib\Net40\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc">
+      <HintPath>..\packages\FluentValidation.MVC3.3.3.1.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="FubuCore">
+      <HintPath>..\packages\FubuCore.0.9.9.149\lib\FubuCore.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlTags">
+      <HintPath>..\packages\HtmlTags.1.1.0.86\lib\4.0\HtmlTags.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap">
+      <HintPath>..\packages\structuremap.2.6.3\lib\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActionController.cs" />
+    <Compile Include="ActionControllers\ActionControllerBuilder.cs" />
+    <Compile Include="ActionControllers\ActionControllerFactory.cs" />
+    <Compile Include="ActionControllers\ActionControllerLocator.cs" />
+    <Compile Include="ActionControllers\ActionControllerSetup.cs" />
+    <Compile Include="ActionControllers\DefaultNamingConventions.cs" />
+    <Compile Include="ActionControllers\IActionControllerBuilder.cs" />
+    <Compile Include="ActionControllers\IHaveNamingConventions.cs" />
+    <Compile Include="ActionControllers\INamingConventions.cs" />
+    <Compile Include="ActionFactory.cs" />
+    <Compile Include="ActionInfo.cs" />
+    <Compile Include="ChildMessaging.cs" />
+    <Compile Include="Conventions\DataAnnotationHtmlConventions.cs" />
+    <Compile Include="Conventions\DefaultHtmlConventions.cs" />
+    <Compile Include="CookieTempDataProvider.cs" />
+    <Compile Include="Extensions\MoreStringExtensions.cs" />
+    <Compile Include="FeatureRazorViewEngine.cs" />
+    <Compile Include="FluentValidatorFactory.cs" />
+    <Compile Include="FormWebViewPage.cs" />
+    <Compile Include="HtmlTags\Builder.cs" />
+    <Compile Include="HtmlTags\Convention.cs" />
+    <Compile Include="HtmlTags\ConventionAction.cs" />
+    <Compile Include="HtmlTags\ConventionActionAttribute.cs" />
+    <Compile Include="HtmlTags\FormBuilder.cs" />
+    <Compile Include="HtmlTags\HtmlConvention.cs" />
+    <Compile Include="HtmlTags\HtmlConventionFactory.cs" />
+    <Compile Include="HtmlTags\IConventionAccessor.cs" />
+    <Compile Include="HtmlTags\IConventionAction.cs" />
+    <Compile Include="HtmlTags\IConventionActionAttribute.cs" />
+    <Compile Include="HtmlTags\InputTypeMvcForm.cs" />
+    <Compile Include="HtmlTags\ITagConventions.cs" />
+    <Compile Include="HtmlTags\RequestData.cs" />
+    <Compile Include="HtmlTags\TagConventions.cs" />
+    <Compile Include="HtmlTags\TagGenerator.cs" />
+    <Compile Include="Html\TagExtensions.cs" />
+    <Compile Include="ICommandHandler.cs" />
+    <Compile Include="IHandler.cs" />
+    <Compile Include="IInvoker.cs" />
+    <Compile Include="Invoker.cs" />
+    <Compile Include="LoopHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouteAttribute.cs" />
+    <Compile Include="SmDependencyResolver.cs" />
+    <Compile Include="UrlExtensions.cs" />
+    <Compile Include="Conventions\FluentValidationHtmlConventions.cs" />
+    <Compile Include="ValidatorFinder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

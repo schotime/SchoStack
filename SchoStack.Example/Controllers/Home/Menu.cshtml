@@ -1,0 +1,7 @@
+﻿@using SchoStack.Example.Controllers.Form
+@using SchoStack.Example.Controllers.Home
+<ul id="menu">
+    <li>@Html.Link(new HomeIndexQueryModel(), "Home")</li>
+    <li>@Html.Link(new HomeAboutQueryModel(), "About")</li>
+    <li>@Html.Link(new FormSimpleQueryModel(), "FormSample")</li>
+</ul>

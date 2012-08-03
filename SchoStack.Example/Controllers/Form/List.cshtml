@@ -1,0 +1,29 @@
+﻿@using SchoStack.Example.Controllers.Form
+@using SchoStack.Example.Controllers.Home
+@model FormListViewModel
+@{
+    ViewBag.Title = "List";
+}
+
+<h2>Simple List</h2>
+
+@Html.Link(new FormSimpleQueryModel(), "Simple Sample")
+
+<div>
+    @Html.ValidationSummary()
+
+    @using (Form.For<FormListInputModel>())
+    {
+        foreach (var _ in Model.Todos.Track())
+        {
+            <div>
+                @Html.Input(x => x.Todos[Loop.Index].Desc)
+                @Html.Input(x => x.Todos[Loop.Index].Done) 
+            </div>
+        }
+        
+        @Html.Submit("Submit")
+    }
+    
+    @Html.Partial("Partial")
+</div>

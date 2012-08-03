@@ -1,0 +1,27 @@
+﻿@using SchoStack.Example.Controllers.Form
+@model FormSimpleViewModel
+@{
+    ViewBag.Title = "Simple";
+}
+
+<h2>Simple Form</h2>
+
+@Html.Link(new FormListQueryModel(), "List Sample")
+
+<div>
+    @Html.ValidationSummary()
+
+    @using (Form.For<FormSimpleInputModel>())
+    {
+        <div>
+            @Html.Label(x => x.Email)
+            @Html.Input(x => x.Email)
+        </div>
+        <div>
+            @Html.Label(x => x.Password)
+            @Html.Input(x => x.Password)
+        </div>
+        @Html.Submit("Submit")
+    }
+
+</div>
