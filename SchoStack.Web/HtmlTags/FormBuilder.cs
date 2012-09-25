@@ -41,8 +41,20 @@ namespace SchoStack.Web.HtmlTags
 
         public MvcForm For<TInput>(TInput model, Action<FormTag> modifier)
         {
-            _webViewPage.Context.Items[TagGenerator.FORMINPUTTYPE] = typeof(TInput);
             var url = _webViewPage.Url.For(model);
+            return GenerateForm<TInput>(modifier, url);
+        }
+
+        public MvcForm For<TInput>(string controller, string action, object routesValues = null, Action<FormTag> modifier = null)
+        {
+            modifier = modifier ?? (x => {});
+            var url = _webViewPage.Url.Action(action, controller, routesValues);
+            return GenerateForm<TInput>(modifier, url);
+        }
+
+        private MvcForm GenerateForm<TInput>(Action<FormTag> modifier, string url)
+        {
+            _webViewPage.Context.Items[TagGenerator.FORMINPUTTYPE] = typeof (TInput);
             var tagGenerator = new TagGenerator(HtmlConventionFactory.HtmlConventions);
             var tag = tagGenerator.GenerateTagFor(_webViewPage.ViewContext, () => new FormTag(url));
             modifier(tag);

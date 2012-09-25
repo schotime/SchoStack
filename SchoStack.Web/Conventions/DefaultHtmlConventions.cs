@@ -57,8 +57,6 @@ namespace SchoStack.Web.Conventions
 
             Labels.Always.Modify((h, r) => h.Id(r.Id + "_" + "Label"));
             Displays.Always.Modify((h, r) => h.Id(r.Id + "_" + "Display"));
-
-            Labels.IfAttribute<DisplayNameAttribute>().Modify((h, r, a) => h.Text(a.DisplayName));
         }
 
         private static HtmlTag BuildSelectList(RequestData req)

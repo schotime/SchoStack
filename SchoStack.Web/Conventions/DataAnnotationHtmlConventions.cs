@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using HtmlTags;
 using SchoStack.Web.HtmlTags;
@@ -9,6 +10,8 @@ namespace SchoStack.Web.Conventions
     {
         public DataAnnotationHtmlConventions()
         {
+            Labels.IfAttribute<DisplayNameAttribute>().Modify((h, r, a) => h.Text(a.DisplayName));
+
             Inputs.IfAttribute<DataTypeAttribute>().BuildBy((r, a) =>
             {
                 if (a.DataType == DataType.Text)
