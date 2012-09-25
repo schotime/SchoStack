@@ -15,7 +15,7 @@ namespace SchoStack.Web.Conventions
         public DefaultHtmlConventions()
         {
             Displays.Always.BuildBy(req => new HtmlTag("span").Text(req.GetValue<string>()));
-            Labels.Always.BuildBy(req => new HtmlTag("label").Attr("for", req.Id).Text(req.Accessor.Name.BreakUpCamelCase()));
+            Labels.Always.BuildBy(req => new HtmlTag("label").Attr("for", req.Id).Text(req.Accessor.InnerProperty.Name.BreakUpCamelCase()));
             Inputs.Always.BuildBy(req =>
             {
                 return new TextboxTag().Attr("value", req.GetAttemptedValue() ?? req.GetValue<string>());
