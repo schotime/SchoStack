@@ -37,7 +37,7 @@ namespace SchoStack.Tests.HtmlConventions
 
     public class TestInputModel
     {
-        [StringLength(20)]
+        [StringLength(20, MinimumLength = 3)]
         [Required]
         public string Name { get; set; }
 

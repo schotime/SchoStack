@@ -46,13 +46,6 @@ namespace SchoStack.Web.Conventions.Core
             return GenerateForm<TInput>(modifier, url);
         }
 
-        public MvcForm For<TInput>(string controller, string action, object routesValues = null, Action<FormTag> modifier = null)
-        {
-            modifier = modifier ?? (x => {});
-            var url = _webViewPage.Url.Action(action, controller, routesValues);
-            return GenerateForm<TInput>(modifier, url);
-        }
-
         private MvcForm GenerateForm<TInput>(Action<FormTag> modifier, string url)
         {
             _webViewPage.Context.Items[TagGenerator.FORMINPUTTYPE] = typeof (TInput);

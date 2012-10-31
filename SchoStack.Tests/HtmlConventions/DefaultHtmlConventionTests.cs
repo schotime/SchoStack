@@ -331,6 +331,17 @@ namespace SchoStack.Tests.HtmlConventions
             var attribute = expression.GetMemberExpression(false).Member.GetAttribute<DisplayNameAttribute>();
             tag.Text().ShouldBe(attribute.DisplayName);
         }
+
+        [Test]
+        public void SubmitButtonShouldHaveNoIdTag()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+
+            var tag = helper.Submit("test").AddClass("testclass");
+
+            tag.ToString().ShouldBe("<input type=\"submit\" value=\"test\" class=\"testclass\" />");
+        }
     }
 
 }

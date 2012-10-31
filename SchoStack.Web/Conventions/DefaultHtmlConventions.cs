@@ -33,30 +33,27 @@ namespace SchoStack.Web.Conventions
             Inputs.If<IEnumerable<SelectListItem>>().BuildBy(BuildSelectList);
             Inputs.If<MultiSelectList>().BuildBy(BuildSelectList);
             
-            Inputs.Always.Modify((h, r) =>
-            {
-                //Validation class
-                ModelState modelState;
-                if (r.ViewContext.ViewData.ModelState.TryGetValue(r.Name, out modelState))
-                {
-                    if (modelState.Errors.Count > 0)
-                    {
-                        h.AddClass(HtmlHelper.ValidationInputCssClassName);
-                    }
-                }
-            });
-
             All.Always.Modify((h, r) =>
             {
-                h.Id((string.IsNullOrEmpty(r.Id) ? null : r.Id) ?? h.Id());
+                h.Id((string.IsNullOrEmpty(r.Id) ? null : r.Id) ?? (string.IsNullOrEmpty(h.Id()) ? null : h.Id()));
                 if (h.IsInputElement())
                 {
-                    h.Attr("name", r.Name ?? h.Attr("name"));
+                    h.Attr("name", r.Name ?? (string.IsNullOrEmpty(h.Attr("name")) ? null : h.Attr("name")));
                 }
             });
 
             Labels.Always.Modify((h, r) => h.Id(r.Id + "_" + "Label"));
             Displays.Always.Modify((h, r) => h.Id(r.Id + "_" + "Display"));
+
+            Inputs.Always.Modify((h, r) =>
+            {
+                //Validation class
+                ModelState modelState;
+                if (r.ViewContext.ViewData.ModelState.TryGetValue(r.Name, out modelState) && modelState.Errors.Count > 0)
+                {
+                    h.AddClass(HtmlHelper.ValidationInputCssClassName);
+                }
+            });
         }
 
         private static HtmlTag BuildSelectList(RequestData req)
