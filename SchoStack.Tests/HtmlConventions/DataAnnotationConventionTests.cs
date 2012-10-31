@@ -5,8 +5,8 @@ using FubuCore.Reflection;
 using NUnit.Framework;
 using Promaster.Tests;
 using SchoStack.Web.Conventions;
+using SchoStack.Web.Conventions.Core;
 using SchoStack.Web.Html;
-using SchoStack.Web.HtmlTags;
 using Shouldly;
 
 namespace SchoStack.Tests.HtmlConventions

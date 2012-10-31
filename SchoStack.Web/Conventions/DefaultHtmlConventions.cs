@@ -5,8 +5,8 @@ using System.Linq;
 using System.Web.Mvc;
 using FubuCore;
 using HtmlTags;
+using SchoStack.Web.Conventions.Core;
 using SchoStack.Web.Extensions;
-using SchoStack.Web.HtmlTags;
 
 namespace SchoStack.Web.Conventions
 {

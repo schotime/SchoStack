@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using FubuCore.Reflection;
 using HtmlTags;
 
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public class TagGenerator
     {

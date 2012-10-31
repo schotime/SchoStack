@@ -1,5 +1,5 @@
 using System.Web.Mvc;
-using SchoStack.Web.HtmlTags;
+using SchoStack.Web.Conventions.Core;
 
 namespace SchoStack.Web
 {

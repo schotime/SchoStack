@@ -1,7 +1,7 @@
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public class InputTypeMvcForm : MvcForm
     {

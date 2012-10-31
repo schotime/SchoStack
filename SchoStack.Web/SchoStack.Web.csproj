@@ -12,6 +12,8 @@
     <AssemblyName>SchoStack.Web</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,20 +33,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentValidation">
-      <HintPath>..\packages\FluentValidation.3.3.1.0\lib\Net40\FluentValidation.dll</HintPath>
-    </Reference>
-    <Reference Include="FluentValidation.Mvc">
-      <HintPath>..\packages\FluentValidation.MVC3.3.3.1.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
-    </Reference>
     <Reference Include="FubuCore">
       <HintPath>..\packages\FubuCore.0.9.9.149\lib\FubuCore.dll</HintPath>
     </Reference>
     <Reference Include="HtmlTags">
       <HintPath>..\packages\HtmlTags.1.1.0.86\lib\4.0\HtmlTags.dll</HintPath>
-    </Reference>
-    <Reference Include="StructureMap">
-      <HintPath>..\packages\structuremap.2.6.3\lib\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -70,47 +63,46 @@
     <Compile Include="ActionControllers\INamingConventions.cs" />
     <Compile Include="ActionFactory.cs" />
     <Compile Include="ActionInfo.cs" />
+    <Compile Include="AttribValidatorFinder.cs" />
     <Compile Include="ChildMessaging.cs" />
     <Compile Include="Conventions\DataAnnotationHtmlConventions.cs" />
+    <Compile Include="Conventions\DataAnnotationValidationHtmlConventions.cs" />
     <Compile Include="Conventions\DefaultHtmlConventions.cs" />
     <Compile Include="CookieTempDataProvider.cs" />
     <Compile Include="Extensions\MoreStringExtensions.cs" />
     <Compile Include="FeatureRazorViewEngine.cs" />
-    <Compile Include="FluentValidatorFactory.cs" />
     <Compile Include="FormWebViewPage.cs" />
-    <Compile Include="HtmlTags\Builder.cs" />
-    <Compile Include="HtmlTags\Convention.cs" />
-    <Compile Include="HtmlTags\ConventionAction.cs" />
-    <Compile Include="HtmlTags\ConventionActionAttribute.cs" />
-    <Compile Include="HtmlTags\FormBuilder.cs" />
-    <Compile Include="HtmlTags\HtmlConvention.cs" />
-    <Compile Include="HtmlTags\HtmlConventionFactory.cs" />
-    <Compile Include="HtmlTags\IConventionAccessor.cs" />
-    <Compile Include="HtmlTags\IConventionAction.cs" />
-    <Compile Include="HtmlTags\IConventionActionAttribute.cs" />
-    <Compile Include="HtmlTags\InputTypeMvcForm.cs" />
-    <Compile Include="HtmlTags\ITagConventions.cs" />
-    <Compile Include="HtmlTags\RequestData.cs" />
-    <Compile Include="HtmlTags\TagConventions.cs" />
-    <Compile Include="HtmlTags\TagGenerator.cs" />
-    <Compile Include="Html\TagExtensions.cs" />
+    <Compile Include="Conventions\Core\Builder.cs" />
+    <Compile Include="Conventions\Core\Convention.cs" />
+    <Compile Include="Conventions\Core\ConventionAction.cs" />
+    <Compile Include="Conventions\Core\ConventionActionAttribute.cs" />
+    <Compile Include="Conventions\Core\FormBuilder.cs" />
+    <Compile Include="Conventions\Core\HtmlConvention.cs" />
+    <Compile Include="Conventions\Core\HtmlConventionFactory.cs" />
+    <Compile Include="Conventions\Core\IConventionAccessor.cs" />
+    <Compile Include="Conventions\Core\IConventionAction.cs" />
+    <Compile Include="Conventions\Core\IConventionActionAttribute.cs" />
+    <Compile Include="Conventions\Core\InputTypeMvcForm.cs" />
+    <Compile Include="Conventions\Core\ITagConventions.cs" />
+    <Compile Include="Conventions\Core\TagConventions.cs" />
+    <Compile Include="Conventions\Core\TagGenerator.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="IHandler.cs" />
     <Compile Include="IInvoker.cs" />
     <Compile Include="Invoker.cs" />
     <Compile Include="LoopHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Conventions\Core\RequestData.cs" />
     <Compile Include="RouteAttribute.cs" />
-    <Compile Include="SmDependencyResolver.cs" />
+    <Compile Include="TagExtensions.cs" />
     <Compile Include="UrlExtensions.cs" />
-    <Compile Include="Conventions\FluentValidationHtmlConventions.cs" />
-    <Compile Include="ValidatorFinder.cs" />
+    <Compile Include="ValidatorFinderHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

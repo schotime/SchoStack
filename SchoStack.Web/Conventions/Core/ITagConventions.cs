@@ -1,6 +1,6 @@
 using System;
 
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public interface ITagConventions
     {

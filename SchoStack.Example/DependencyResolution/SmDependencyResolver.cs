@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using StructureMap;
 
-namespace SchoStack.Web
+namespace SchoStack.Example
 {
     public class SmDependencyResolver : IDependencyResolver {
 
@@ -16,15 +16,15 @@ namespace SchoStack.Web
 
         public object GetService(Type serviceType) {
             if (serviceType == null) return null;
-            //try {
+            try {
                   return serviceType.IsAbstract || serviceType.IsInterface
                            ? _container.TryGetInstance(serviceType)
                            : _container.GetInstance(serviceType);
-            //}
-            //catch {
+            }
+            catch {
 
-            //    return null;
-            //}
+                return null;
+            }
         }
 
         public IEnumerable<object> GetServices(Type serviceType) {

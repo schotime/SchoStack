@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using HtmlTags;
 
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public class ConventionAction : IConventionAction
     {

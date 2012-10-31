@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using HtmlTags;
 
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public class ConventionActionAttribute<TAttribute> : ConventionAction, IConventionActionAttribute<TAttribute>
     {

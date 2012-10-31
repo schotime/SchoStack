@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using StructureMap;
+using System.Web.Mvc;
 
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public class HtmlConventionFactory
     {
@@ -14,7 +14,7 @@ namespace SchoStack.Web.HtmlTags
 
         public static void Add<T>() where T : HtmlConvention
         {
-            HtmlConventions.Add(ObjectFactory.GetInstance<T>());
+            HtmlConventions.Add(DependencyResolver.Current.GetService<T>());
         }
     }
 }

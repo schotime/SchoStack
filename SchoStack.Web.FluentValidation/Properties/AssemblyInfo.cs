@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SchoStack.Web")]
+[assembly: AssemblyTitle("SchoStack.Web.FluentValidation")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SchoStack.Web")]
+[assembly: AssemblyProduct("SchoStack.Web.FluentValidation")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("675019a7-fd8a-4a47-b1af-9858b63d20f3")]
+[assembly: Guid("9e2fe217-653f-4e6e-b53e-beb8fe4790b9")]
 
 // Version information for an assembly consists of the following four values:
 //

@@ -9,7 +9,8 @@ using FluentValidation.Mvc;
 using SchoStack.Web;
 using SchoStack.Web.ActionControllers;
 using SchoStack.Web.Conventions;
-using SchoStack.Web.HtmlTags;
+using SchoStack.Web.Conventions.Core;
+using SchoStack.Web.FluentValidation;
 using StructureMap;
 
 namespace SchoStack.Example
@@ -54,7 +55,7 @@ namespace SchoStack.Example
 
             HtmlConventionFactory.Add(new DefaultHtmlConventions());
             HtmlConventionFactory.Add(new DataAnnotationHtmlConventions());
-            HtmlConventionFactory.Add(new FluentValidationHtmlConventions(new ValidatorFinder(resolver)));
+            HtmlConventionFactory.Add(new FluentValidationHtmlConventions(new FluentValidatorFinder(resolver)));
 
             ViewEngines.Engines.Clear();
             ViewEngines.Engines.Add(new FeatureCsRazorViewEngine("Controllers"));

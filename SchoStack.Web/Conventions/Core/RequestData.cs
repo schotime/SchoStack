@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using FubuCore.Reflection;
 
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public class RequestData
     {

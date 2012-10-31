@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public interface IConventionAccessor
     {

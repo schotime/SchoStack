@@ -7,8 +7,9 @@ using NUnit.Framework;
 using Promaster.Tests;
 using SchoStack.Web;
 using SchoStack.Web.Conventions;
+using SchoStack.Web.Conventions.Core;
+using SchoStack.Web.FluentValidation;
 using SchoStack.Web.Html;
-using SchoStack.Web.HtmlTags;
 using Shouldly;
 
 namespace SchoStack.Tests.HtmlConventions
@@ -23,7 +24,7 @@ namespace SchoStack.Tests.HtmlConventions
             var dict = new Dictionary<Type, IValidator>();
             dict.Add(typeof(IValidator<TestInputModel>), new TestInputValidator());
             dep.Setup(x => x.GetService(It.IsAny<Type>())).Returns<Type>(x => dict[x]);
-            HtmlConventionFactory.Add(new FluentValidationHtmlConventions(new ValidatorFinder(dep.Object)));
+            HtmlConventionFactory.Add(new FluentValidationHtmlConventions(new FluentValidatorFinder(dep.Object)));
         }
 
         [Test]

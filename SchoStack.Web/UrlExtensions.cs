@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace SchoStack.Web
+namespace SchoStack.Web.Url
 {
     public static class UrlExtensions
     {

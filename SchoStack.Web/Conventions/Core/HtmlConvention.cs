@@ -1,4 +1,4 @@
-namespace SchoStack.Web.HtmlTags
+namespace SchoStack.Web.Conventions.Core
 {
     public class HtmlConvention
     {

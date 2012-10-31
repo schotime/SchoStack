@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using HtmlTags;
-using SchoStack.Web.HtmlTags;
+using SchoStack.Web.Conventions.Core;
 
 namespace SchoStack.Web.Conventions
 {
@@ -28,7 +28,29 @@ namespace SchoStack.Web.Conventions
 
             Inputs.IfAttribute<HiddenInputAttribute>().Modify((h, r, a) => h.Attr("type", "hidden"));
 
-            Inputs.IfAttribute<StringLengthAttribute>().Modify((h, r, a) => h.Attr("maxlength", a.MaximumLength));
+            Inputs.IfAttribute<StringLengthAttribute>().Modify((h, r, a) =>
+            {
+                h.Attr("maxlength", a.MaximumLength);
+                if (a.MinimumLength > 0)
+                    h.Attr("minlength", a.MinimumLength);
+            });
+
+            Inputs.Always.Modify((h, r) => AddNumberClasses(r, h));
         }
+        
+        private static void AddNumberClasses(RequestData r, HtmlTag h)
+        {
+            if (r.Accessor.PropertyType == typeof(int) || r.Accessor.PropertyType == typeof(int?))
+            {
+                h.AddClass("digits");
+            }
+            else if (r.Accessor.PropertyType == typeof(double) || r.Accessor.PropertyType == typeof(double?)
+                || r.Accessor.PropertyType == typeof(decimal) || r.Accessor.PropertyType == typeof(decimal?)
+                || r.Accessor.PropertyType == typeof(float) || r.Accessor.PropertyType == typeof(float?))
+            {
+                h.AddClass("number");
+            }
+        }
+
     }
 }

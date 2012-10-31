@@ -38,11 +38,13 @@ namespace SchoStack.Tests.HtmlConventions
     public class TestInputModel
     {
         [StringLength(20)]
+        [Required]
         public string Name { get; set; }
 
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        [Compare("Password")]
         public string PasswordConfirm { get; set; }
 
         [DataType(DataType.Text)]
@@ -58,6 +60,7 @@ namespace SchoStack.Tests.HtmlConventions
 
         public List<SelectListItem> Dropdown { get; set; }
         public MultiSelectList MultiSelect { get; set; }
+        
         public int Int { get; set; }
         public decimal Decimal { get; set; }
         public double Double { get; set; }
