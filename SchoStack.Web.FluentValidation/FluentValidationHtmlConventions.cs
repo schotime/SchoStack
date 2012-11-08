@@ -15,9 +15,10 @@ namespace SchoStack.Web.Conventions
             {
                 var propertyValidators = validatorFinder.FindValidators(r);
                 AddLengthClasses(propertyValidators, h);
-                AddRequiredClass(propertyValidators, h);
+                AddRequiredClass(propertyValidators, h, r.ViewContext.UnobtrusiveJavaScriptEnabled);
                 AddCreditCardClass(propertyValidators, h);
                 AddEqualToDataAttr(propertyValidators, h, r);
+                AddRegexData(propertyValidators, h);
             });
         }
 
@@ -26,6 +27,7 @@ namespace SchoStack.Web.Conventions
             var equal = propertyValidators.OfType<EqualValidator>().FirstOrDefault();
             if (equal != null)
             {
+                htmlTag.Data("val", true);
                 if (request.Accessor.PropertyNames.Length > 1)
                 {
                     htmlTag.Data("val-equalTo", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
@@ -37,13 +39,16 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private static void AddRequiredClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag)
+        private static void AddRequiredClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, bool unobtrusiveJavaScriptEnabled)
         {
             var notEmpty = propertyValidators.FirstOrDefault(x => x.GetType() == typeof (NotEmptyValidator)
                                                                || x.GetType() == typeof (NotNullValidator));
             if (notEmpty != null)
             {
-                htmlTag.AddClass("required");
+                if (unobtrusiveJavaScriptEnabled)
+                    htmlTag.Data("val", true).Data("val-required", notEmpty.ErrorMessageSource.GetString() ?? string.Empty);
+                else
+                    htmlTag.AddClass("required");
             }
         }
 
@@ -64,6 +69,15 @@ namespace SchoStack.Web.Conventions
             if (lengthValidator != null)
             {
                 htmlTag.AddClass("creditcard");
+            }
+        }
+
+        private static void AddRegexData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag)
+        {
+            var regex = propertyValidators.OfType<RegularExpressionValidator>().FirstOrDefault();
+            if (regex != null)
+            {
+                htmlTag.Data("val", true).Data("val-regex", regex.ErrorMessageSource.GetString() ?? string.Format("The value did not match the regular expression '{0}'", regex.Expression)).Data("val-regex-pattern", regex.Expression);
             }
         }
     }

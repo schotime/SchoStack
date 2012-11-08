@@ -47,8 +47,13 @@ namespace SchoStack.Web.Html
 
         public static LiteralTag ValidationMessage<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression)
         {
+            return ValidationMessage(htmlHelper, expression, null);
+        }
+
+        public static LiteralTag ValidationMessage<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string message)
+        {
             var req = new RequestData() { Accessor = ReflectionHelper.GetAccessor(expression) };
-            var val = ValidationExtensions.ValidationMessage(htmlHelper, req.Name);
+            var val = ValidationExtensions.ValidationMessage(htmlHelper, req.Name, message);
             if (val != null)
                 return new LiteralTag(val.ToHtmlString());
             return new LiteralTag("");
@@ -71,6 +76,12 @@ namespace SchoStack.Web.Html
         {
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
             var tag = TagGen().GenerateTagFor(htmlHelper.ViewContext, () => new LinkTag(text, urlHelper.Action(action, controller, routeValues)));
+            return tag;
+        }
+
+        public static HtmlTag Tag(this HtmlHelper htmlHelper, string tagName)
+        {
+            var tag = TagGen().GenerateTagFor(htmlHelper.ViewContext, () => new HtmlTag("tag"));
             return tag;
         }
 

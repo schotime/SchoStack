@@ -17,8 +17,6 @@ namespace SchoStack.Tests.HtmlConventions
     {
         public DataAnnotValidationConventionTests()
         {
-            HtmlConventionFactory.Add(new DefaultHtmlConventions());
-            HtmlConventionFactory.Add(new DataAnnotationHtmlConventions());
             HtmlConventionFactory.Add(new DataAnnotationValidationHtmlConventions());
         }
 
@@ -30,6 +28,18 @@ namespace SchoStack.Tests.HtmlConventions
             helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof (TestInputModel);
             var tag = helper.Input(x => x.Name);
             tag.HasClass("required").ShouldBe(true);
+        }
+
+        [Test]
+        public void PropertyWithRequiredAttributeDefinedShouldHaveUnObtrusiveDataAttributesIfEnabled()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.UnobtrusiveJavaScriptEnabled = true;
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            var tag = helper.Input(x => x.Name);
+            tag.HasAttr("data-val").ShouldBe(true);
+            tag.HasAttr("data-val-required").ShouldBe(true);
         }
 
         [Test]

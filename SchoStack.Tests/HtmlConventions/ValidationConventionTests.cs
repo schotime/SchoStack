@@ -38,6 +38,40 @@ namespace SchoStack.Tests.HtmlConventions
         }
 
         [Test]
+        public void PropertyWithNotEmptyFluentValidationDefinedShouldHaveUnObtrusiveDataAttributesIfEnabled()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.UnobtrusiveJavaScriptEnabled = true;
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            var tag = helper.Input(x => x.Name);
+            tag.HasAttr("data-val").ShouldBe(true);
+            tag.HasAttr("data-val-required").ShouldBe(true);
+        }
+
+        [Test]
+        public void PropertyWithNotEmptyFluentValidationDefinedShouldHaveUnObtrusiveDataAttributesWithMessageIfEnabled()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.UnobtrusiveJavaScriptEnabled = true;
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            var tag = helper.Input(x => x.Name);
+            tag.Attr("data-val-required").ShouldBe("Test Message");
+        }
+
+        [Test]
+        public void PropertyWithRegexDefinedShouldHaveUnObtrusiveDataAttributesWithMessageIfEnabled()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            var tag = helper.Input(x => x.DisplayName);
+            tag.Attr("data-val-regex").ShouldBe("Regex No Match");
+            tag.Attr("data-val-regex-pattern").ShouldBe("[a-zA-Z]");
+        }
+
+        [Test]
         public void PropertyWithLengthFluentValidationDefinedShouldHaveMaxLengthAttribute()
         {
             var model = new TestViewModel();

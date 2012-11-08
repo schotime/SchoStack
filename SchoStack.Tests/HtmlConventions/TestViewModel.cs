@@ -75,7 +75,7 @@ namespace SchoStack.Tests.HtmlConventions
         public TestInputValidator()
         {
             RuleFor(x => x.Name)
-                .NotEmpty()
+                .NotEmpty().WithMessage("Test Message")
                 .Length(NAME_MINLENGTH, NAME_MAXLENGTH);
 
             RuleFor(x => x.CreditCard)
@@ -83,6 +83,10 @@ namespace SchoStack.Tests.HtmlConventions
 
             RuleFor(x => x.PasswordConfirm)
                 .Equal(x => x.Password);
+
+            RuleFor(x => x.DisplayName)
+                .Matches("[a-zA-Z]")
+                .WithMessage("Regex No Match");
         }
     }
 }

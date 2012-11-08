@@ -11,6 +11,21 @@ namespace Promaster.Tests
 {
     public static class MvcMockHelpers
     {
+
+        public class FakeViewContext : ViewContext
+        {
+            public FakeViewContext(ControllerContext controllerContext, IView view, ViewDataDictionary viewData, TempDataDictionary tempData, TextWriter writer) 
+                : base(controllerContext, view, viewData, tempData, writer)
+            {
+            }
+
+            public FakeViewContext()
+            {
+            }
+
+            public override bool UnobtrusiveJavaScriptEnabled { get; set; }
+        }
+
         public static HtmlHelper<T> GetHtmlHelper<T>(T model)
         {
             var viewdata = new ViewDataDictionary(model);
@@ -29,7 +44,7 @@ namespace Promaster.Tests
             var httpContext = FakeHttpContext();
             Mock.Get(httpContext).Setup(x => x.Items).Returns(new Dictionary<string, object>());
 
-            var mockViewContext = new ViewContext(
+            var mockViewContext = new FakeViewContext(
                 new ControllerContext(
                     httpContext,
                     new RouteData(),
