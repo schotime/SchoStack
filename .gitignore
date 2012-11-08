@@ -10,3 +10,4 @@ _ReSharper*
 TestResults
 connectionStrings.config
 rh.exe
+dev_*

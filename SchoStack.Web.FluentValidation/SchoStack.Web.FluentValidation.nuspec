@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>0.6.1</version>
+    <version>0.6.2</version>
     <title>$title$</title>
     <authors>Adam Schroder</authors>
     <owners>Adam Schroder</owners>
@@ -10,7 +10,7 @@
     <description>Asp.net MVC 3 helper library that enables the use of Html Conventions, FluentValidation and ActionControllers</description>
     <copyright>Copyright 2012</copyright>
 	<dependencies>
-      <dependency id="SchoStack.Web" version="0.6.0" />
+      <dependency id="SchoStack.Web" version="0.6.2" />
     </dependencies>
   </metadata>
 </package>
