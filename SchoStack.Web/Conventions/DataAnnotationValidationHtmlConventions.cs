@@ -16,18 +16,18 @@ namespace SchoStack.Web.Conventions
             {
                 var propertyValidators = new AttribValidatorFinder().FindAttributeValidators(r);
                 AddLengthClasses(propertyValidators, h);
-                AddRequiredClass(propertyValidators, h, r.ViewContext.UnobtrusiveJavaScriptEnabled);
-                AddRegexData(propertyValidators, h);
+                AddRequiredClass(propertyValidators, h, r);
+                AddRegexData(propertyValidators, h, r);
                 AddEqualToDataAttr(propertyValidators, h, r);
             });
         }
 
-        private static void AddRegexData(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag)
+        private static void AddRegexData(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData request)
         {
             var regex = propertyValidators.OfType<RegularExpressionAttribute>().FirstOrDefault();
             if (regex != null)
             {
-                htmlTag.Data("val", true).Data("val-regex", regex.ErrorMessage ?? string.Format("The value did not match the regular expression '{0}'", regex.Pattern)).Data("val-regex-pattern", regex.Pattern);
+                htmlTag.Data("val", true).Data("val-regex", regex.ErrorMessage ?? string.Format("The field '{0}' did not match the regular expression '{1}'", request.Accessor.InnerProperty.Name, regex.Pattern)).Data("val-regex-pattern", regex.Pattern);
             }
         }
 
@@ -48,13 +48,13 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private static void AddRequiredClass(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, bool unobtrusiveJavaScriptEnabled)
+        private static void AddRequiredClass(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData request)
         {
             var notEmpty = propertyValidators.OfType<RequiredAttribute>().FirstOrDefault();
             if (notEmpty != null)
             {
-                if (unobtrusiveJavaScriptEnabled) 
-                    htmlTag.Data("val", true).Data("val-required", notEmpty.ErrorMessage ?? "The value is required");
+                if (request.ViewContext.UnobtrusiveJavaScriptEnabled)
+                    htmlTag.Data("val", true).Data("val-required", notEmpty.ErrorMessage ?? string.Format("The field '{0}' is required", request.Accessor.InnerProperty.Name));
                 else 
                     htmlTag.AddClass("required");
             }
