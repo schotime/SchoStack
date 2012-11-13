@@ -26,6 +26,9 @@ namespace SchoStack.Web.Conventions.Core
 
         public T GetValue<T>()
         {
+            if (ViewContext.ViewData.Model == null)
+                return default(T);
+
             var val = Accessor.GetValue(ViewContext.ViewData.Model);
             if (TagConventions.IsAssignable<T>(this))
                 return (T) val;
