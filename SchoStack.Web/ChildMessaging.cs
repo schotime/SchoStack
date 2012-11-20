@@ -15,6 +15,8 @@ namespace SchoStack.Web
     {
         private IChildMessagingStorage _storage;
 
+        public ChildMessaging() : this(new ChildMessagingStorage()) { }
+
         public ChildMessaging(IChildMessagingStorage storage)
         {
             _storage = storage;
