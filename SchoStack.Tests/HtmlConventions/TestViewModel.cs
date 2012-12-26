@@ -33,6 +33,8 @@ namespace SchoStack.Tests.HtmlConventions
         public decimal Decimal { get; set; }
         public double Double { get; set; }
         public string CreditCard { get; set; }
+
+        public bool NotInInputModel { get; set; }
     }
 
     public class TestInputModel

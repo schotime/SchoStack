@@ -140,5 +140,17 @@ namespace SchoStack.Tests.HtmlConventions
             var tag = helper.Input(x => x.Double);
             tag.HasClass("number").ShouldBe(true);
         }
+
+        [Test]
+        public void PropertyInViewModelButNotInInputModel()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            Assert.DoesNotThrow(() =>
+                                    {
+                                        var tag = helper.Input(x => x.NotInInputModel);
+                                    });
+        }
     }
 }

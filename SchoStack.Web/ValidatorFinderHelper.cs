@@ -16,7 +16,11 @@ namespace SchoStack.Web
 
             if (r.Accessor is SingleProperty)
             {
-                properties.Add(r.InputType.GetProperty(r.Accessor.InnerProperty.Name));
+                var prop = r.InputType.GetProperty(r.Accessor.InnerProperty.Name);
+                if (prop != null)
+                {
+                    properties.Add(prop);   
+                }
             }
             else if (r.Accessor is PropertyChain)
             {
