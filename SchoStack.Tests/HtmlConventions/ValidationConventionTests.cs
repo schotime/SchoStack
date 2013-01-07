@@ -61,6 +61,17 @@ namespace SchoStack.Tests.HtmlConventions
         }
 
         [Test]
+        public void PropertyWithNotEmptyFluentValidationDefinedShouldHaveUnObtrusiveDataAttributesWithDefaultMessage()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.UnobtrusiveJavaScriptEnabled = true;
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            var tag = helper.Input(x => x.CreditCard);
+            tag.Attr("data-val-required").ShouldBe("'Credit Card' should not be empty.");
+        }
+
+        [Test]
         public void PropertyWithRegexDefinedShouldHaveUnObtrusiveDataAttributesWithMessageIfEnabled()
         {
             var model = new TestViewModel();

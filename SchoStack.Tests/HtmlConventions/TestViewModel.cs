@@ -81,7 +81,8 @@ namespace SchoStack.Tests.HtmlConventions
                 .Length(NAME_MINLENGTH, NAME_MAXLENGTH);
 
             RuleFor(x => x.CreditCard)
-                .CreditCard();
+                .CreditCard()
+                .NotEmpty();
 
             RuleFor(x => x.PasswordConfirm)
                 .Equal(x => x.Password);

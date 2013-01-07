@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using FluentValidation.Internal;
 using FluentValidation.Validators;
 using HtmlTags;
 using SchoStack.Web.Conventions.Core;
@@ -15,10 +16,10 @@ namespace SchoStack.Web.Conventions
             {
                 var propertyValidators = validatorFinder.FindValidators(r);
                 AddLengthClasses(propertyValidators, h);
-                AddRequiredClass(propertyValidators, h, r.ViewContext.UnobtrusiveJavaScriptEnabled);
+                AddRequiredClass(propertyValidators, h, r);
                 AddCreditCardClass(propertyValidators, h);
                 AddEqualToDataAttr(propertyValidators, h, r);
-                AddRegexData(propertyValidators, h);
+                AddRegexData(propertyValidators, h, r);
             });
         }
 
@@ -39,17 +40,24 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private static void AddRequiredClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, bool unobtrusiveJavaScriptEnabled)
+        private static void AddRequiredClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var notEmpty = propertyValidators.FirstOrDefault(x => x.GetType() == typeof (NotEmptyValidator)
                                                                || x.GetType() == typeof (NotNullValidator));
             if (notEmpty != null)
             {
-                if (unobtrusiveJavaScriptEnabled)
-                    htmlTag.Data("val", true).Data("val-required", notEmpty.ErrorMessageSource.GetString() ?? string.Empty);
+                if (requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
+                    htmlTag.Data("val", true).Data("val-required", GetMessage(requestData, notEmpty) ?? string.Empty);
                 else
                     htmlTag.AddClass("required");
             }
+        }
+
+        private static string GetMessage(RequestData requestData, IPropertyValidator notEmpty)
+        {
+            MessageFormatter formatter = new MessageFormatter().AppendPropertyName(requestData.Accessor.InnerProperty.Name.SplitPascalCase());
+            string message = formatter.BuildMessage(notEmpty.ErrorMessageSource.GetString());
+            return message;
         }
 
         private static void AddLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag)
@@ -72,12 +80,12 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private static void AddRegexData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag)
+        private static void AddRegexData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var regex = propertyValidators.OfType<RegularExpressionValidator>().FirstOrDefault();
             if (regex != null)
             {
-                htmlTag.Data("val", true).Data("val-regex", regex.ErrorMessageSource.GetString() ?? string.Format("The value did not match the regular expression '{0}'", regex.Expression)).Data("val-regex-pattern", regex.Expression);
+                htmlTag.Data("val", true).Data("val-regex", GetMessage(requestData, regex) ?? string.Format("The value did not match the regular expression '{0}'", regex.Expression)).Data("val-regex-pattern", regex.Expression);
             }
         }
     }

@@ -73,17 +73,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\SchoStack.Web.FluentValidation\SchoStack.Web.FluentValidation.csproj">
-      <Project>{487DA134-7D1C-4CB1-9914-020935393479}</Project>
+      <Project>{487da134-7d1c-4cb1-9914-020935393479}</Project>
       <Name>SchoStack.Web.FluentValidation</Name>
     </ProjectReference>
     <ProjectReference Include="..\SchoStack.Web\SchoStack.Web.csproj">
-      <Project>{AE81F184-1C67-4490-8BDD-4D4627704A49}</Project>
+      <Project>{ae81f184-1c67-4490-8bdd-4d4627704a49}</Project>
       <Name>SchoStack.Web</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
