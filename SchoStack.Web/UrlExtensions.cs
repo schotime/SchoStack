@@ -34,7 +34,11 @@ namespace SchoStack.Web.Url
                 var val = prop.GetValue(model, null);
                 if (val == null || Equals(val, GetDefault(val.GetType())))
                     continue;
-                dict.Add(prop.Name, val);
+
+                if (ActionFactory.TypeFormatters.ContainsKey(prop.PropertyType))
+                    val = ActionFactory.TypeFormatters[prop.PropertyType](val);
+                
+                dict.Add(ActionFactory.PropertyNameModifier(prop.Name), val);
             }
             return dict;
         }
