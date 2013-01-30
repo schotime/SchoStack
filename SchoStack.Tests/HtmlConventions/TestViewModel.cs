@@ -46,7 +46,7 @@ namespace SchoStack.Tests.HtmlConventions
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Compare("Password")]
+        [Compare("Password", ErrorMessage = "The Error")]
         public string PasswordConfirm { get; set; }
 
         [DataType(DataType.Text)]

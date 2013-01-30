@@ -121,8 +121,8 @@ namespace SchoStack.Tests.HtmlConventions
             var helper = MvcMockHelpers.GetHtmlHelper(model);
             helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
             var tag = helper.Input(x => x.PasswordConfirm);
-            tag.Data("val-equalTo").ShouldNotBe(null);
-            tag.Data("val-equalTo").ShouldBe("Password");
+            tag.Data("val-equalto").ShouldBe("'Password Confirm' should be equal to 'Password'.");
+            tag.Data("val-equalto-other").ShouldBe("*.Password");
         }
 
         [Test]

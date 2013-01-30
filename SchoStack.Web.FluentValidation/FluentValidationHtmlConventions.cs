@@ -29,13 +29,21 @@ namespace SchoStack.Web.Conventions
             if (equal != null)
             {
                 htmlTag.Data("val", true);
+
+                MessageFormatter formatter = new MessageFormatter()
+                    .AppendPropertyName(request.Accessor.InnerProperty.Name.SplitPascalCase())
+                    .AppendArgument("PropertyValue", equal.MemberToCompare.Name.SplitPascalCase());
+                string message = formatter.BuildMessage(equal.ErrorMessageSource.GetString());
+
+                htmlTag.Data("val-equalto", message);
+
                 if (request.Accessor.PropertyNames.Length > 1)
                 {
-                    htmlTag.Data("val-equalTo", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
+                    htmlTag.Data("val-equalto-other", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
                 }
                 else
                 {
-                    htmlTag.Data("val-equalTo", equal.MemberToCompare.Name);
+                    htmlTag.Data("val-equalto-other", "*." + equal.MemberToCompare.Name);
                 }
             }
         }

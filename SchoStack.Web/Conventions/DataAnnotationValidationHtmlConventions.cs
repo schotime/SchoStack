@@ -37,13 +37,14 @@ namespace SchoStack.Web.Conventions
             if (equal != null)
             {
                 htmlTag.Data("val", true);
+                htmlTag.Data("val-equalto", equal.FormatErrorMessage(request.Accessor.Name));
                 if (request.Accessor.PropertyNames.Length > 1)
                 {
-                    htmlTag.Data("val-equalTo", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.OtherProperty);
+                    htmlTag.Data("val-equalto-other", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.OtherProperty);
                 }
                 else
                 {
-                    htmlTag.Data("val-equalTo", equal.OtherProperty);
+                    htmlTag.Data("val-equalto-other", "*." + equal.OtherProperty);
                 }
             }
         }

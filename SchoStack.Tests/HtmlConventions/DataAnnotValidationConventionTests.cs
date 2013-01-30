@@ -65,14 +65,14 @@ namespace SchoStack.Tests.HtmlConventions
         }
         
         [Test]
-        public void PropertyWithComapreAttributeDefinedShouldHaveValEqualToPassword()
+        public void PropertyWithCompareAttributeDefinedShouldHaveValEqualToPassword()
         {
             var model = new TestViewModel();
             var helper = MvcMockHelpers.GetHtmlHelper(model);
             helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
             var tag = helper.Input(x => x.PasswordConfirm);
-            tag.Data("val-equalTo").ShouldNotBe(null);
-            tag.Data("val-equalTo").ShouldBe("Password");
+            tag.Data("val-equalto").ShouldBe("The Error");
+            tag.Data("val-equalto-other").ShouldBe("*.Password");
         }
     }
 }
