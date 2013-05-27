@@ -18,20 +18,44 @@ namespace SchoStack.Web.Conventions.Core
             _htmlConventions = htmlConventions;
         }
 
-        public HtmlTag GenerateTagFor<TModel, TProperty>(ViewContext viewContext,
+        public HtmlTag GenerateInputFor<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        {
+            var tag = GenerateTag(viewContext, expression, x => x.Inputs);
+            return tag;
+        }
+
+        public HtmlTag GenerateDisplayFor<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        {
+            var tag = GenerateTag(viewContext, expression, x => x.Displays);
+            return tag;
+        }
+
+        public HtmlTag GenerateLabelFor<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        {
+            var tag = GenerateTag(viewContext, expression, x => x.Labels);
+            return tag;
+        }
+
+        private HtmlTag GenerateTag<TModel, TProperty>(ViewContext viewContext, 
             Expression<Func<TModel, TProperty>> expression,
-            Func<RequestData, HtmlTag> builder,
             Func<HtmlConvention, ITagConventions> getTagConvention)
         {
-            var accessor = ReflectionHelper.GetAccessor(expression);
-            var req = new RequestData() { 
-                ViewContext = viewContext, 
-                Accessor = accessor, 
-                InputType = viewContext.HttpContext.Items[FORMINPUTTYPE] as Type 
-            };
-            var tag = builder(req);
+            var req = BuildRequestData(viewContext, expression);
+            var tag = BuildTag(req, getTagConvention);
             ModifyTag(tag, req, getTagConvention);
             return tag;
+        }
+
+        private static RequestData BuildRequestData<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        {
+            var accessor = ReflectionHelper.GetAccessor(expression);
+            var req = new RequestData()
+                      {
+                          ViewContext = viewContext,
+                          Accessor = accessor,
+                          InputType = viewContext.HttpContext.Items[FORMINPUTTYPE] as Type
+                      };
+            return req;
         }
 
         public T GenerateTagFor<T>(ViewContext viewContext, Func<T> builder) where T : HtmlTag
@@ -45,12 +69,12 @@ namespace SchoStack.Web.Conventions.Core
             return tag;
         }
 
-        public HtmlTag BuildTag(RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention)
+        private HtmlTag BuildTag(RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention)
         {
             return BuildTag(requestData, getTagConvention, () => new HtmlTag("span").Text(requestData.GetValue<string>()));
         }
-        
-        public HtmlTag BuildTag(RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention, Func<HtmlTag> defaultBuilder)
+
+        private HtmlTag BuildTag(RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention, Func<HtmlTag> defaultBuilder)
         {
             for (int i = _htmlConventions.Count - 1; i >= 0; i--)
             {

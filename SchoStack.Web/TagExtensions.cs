@@ -14,22 +14,19 @@ namespace SchoStack.Web.Html
         public static HtmlTag Input<TModel, TProperty>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression)
         {
             var tag = new TagGenerator(HtmlConventionFactory.HtmlConventions);
-            Func<HtmlConvention, ITagConventions> conv = x => x.Inputs;
-            return tag.GenerateTagFor(helper.ViewContext, expression, (x) => tag.BuildTag(x, conv), conv);
+            return tag.GenerateInputFor(helper.ViewContext, expression);
         }
 
         public static HtmlTag Display<TModel, TProperty>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression)
         {
             var tag = new TagGenerator(HtmlConventionFactory.HtmlConventions);
-            Func<HtmlConvention, ITagConventions> conv = x => x.Displays;
-            return tag.GenerateTagFor(helper.ViewContext, expression, (x) => tag.BuildTag(x, conv), conv);
+            return tag.GenerateDisplayFor(helper.ViewContext, expression);
         }
 
         public static HtmlTag Label<TModel, TProperty>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression)
         {
             var tag = new TagGenerator(HtmlConventionFactory.HtmlConventions);
-            Func<HtmlConvention, ITagConventions> conv = x => x.Labels;
-            return tag.GenerateTagFor(helper.ViewContext, expression, (x) => tag.BuildTag(x, conv), conv);
+            return tag.GenerateLabelFor(helper.ViewContext, expression);
         }
 
         public static LiteralTag ValidationSummary(this HtmlHelper htmlHelper)
