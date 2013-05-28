@@ -33,12 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FubuCore">
-      <HintPath>..\packages\FubuCore.0.9.9.149\lib\FubuCore.dll</HintPath>
-    </Reference>
-    <Reference Include="HtmlTags, Version=1.2.0.126, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FubuCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\HtmlTags.1.2.0.126\lib\4.0\HtmlTags.dll</HintPath>
+      <HintPath>..\packages\FubuCore.1.0.0.225\lib\FubuCore.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlTags, Version=1.2.0.150, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\HtmlTags.1.2.0.150\lib\4.0\HtmlTags.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -71,6 +72,7 @@
     <Compile Include="Conventions\DefaultHtmlConventions.cs" />
     <Compile Include="CookieTempDataProvider.cs" />
     <Compile Include="Extensions\MoreStringExtensions.cs" />
+    <Compile Include="Extensions\SelectListHelpers.cs" />
     <Compile Include="FeatureRazorViewEngine.cs" />
     <Compile Include="FormWebViewPage.cs" />
     <Compile Include="Conventions\Core\Builder.cs" />

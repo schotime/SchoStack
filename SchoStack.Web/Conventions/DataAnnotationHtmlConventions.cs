@@ -25,8 +25,12 @@ namespace SchoStack.Web.Conventions
                 if (a.DataType == DataType.Password)
                     h.Attr("type", "password").Attr("value", null).Attr("autocomplete", "off");
             });
-
-            Inputs.IfAttribute<HiddenInputAttribute>().Modify((h, r, a) => h.Attr("type", "hidden"));
+            
+            Inputs.IfAttribute<HiddenInputAttribute>().BuildBy((r, a) =>
+            {
+                var hidden = new HiddenTag().Attr("value", r.GetAttemptedValue() ?? r.GetValue<object>());
+                return hidden;
+            });
 
             Inputs.IfAttribute<StringLengthAttribute>().Modify((h, r, a) =>
             {

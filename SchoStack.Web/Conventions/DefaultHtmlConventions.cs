@@ -60,7 +60,7 @@ namespace SchoStack.Web.Conventions
         {
             var list = req.GetValue<IEnumerable<SelectListItem>>();
             var attemptedVal = req.GetAttemptedValue();
-            var multiple = attemptedVal != null ? attemptedVal.Split(',') : null;
+            var multiple = attemptedVal != null ? attemptedVal.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries).Select(x=>x.Trim()) : null;
             var drop = new SelectTag();
             if (list is MultiSelectList)
             {

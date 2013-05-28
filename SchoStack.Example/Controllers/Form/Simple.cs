@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
@@ -16,7 +17,11 @@ namespace SchoStack.Example.Controllers.Form
         {
             var vm = new FormSimpleViewModel()
                      {
-                         Email = "email@email.com"
+                         Email = "email@email.com",
+                         Multi = new MultiSelectList(new List<SelectListItem>() { 
+                             new SelectListItem(){ Text = "One", Value = "1"},
+                             new SelectListItem(){ Text = "Two", Value = "2"},
+                         }, new[] { "1" })
                      };
             return View(vm);
         }
@@ -37,6 +42,8 @@ namespace SchoStack.Example.Controllers.Form
         
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        public MultiSelectList Multi { get; set; }
     }
     public class FormSimpleInputModel
     {
