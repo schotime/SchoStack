@@ -39,7 +39,12 @@ namespace SchoStack.Web.Html
             var val = ValidationExtensions.ValidationSummary(htmlHelper, excludePropertyErrors);
             if (val != null)
                 return new LiteralTag(val.ToHtmlString());
-            return new LiteralTag(new DivTag().AddClass(HtmlHelper.ValidationSummaryCssClassName).ToHtmlString());
+
+            var valtag = new DivTag().AddClass(HtmlHelper.ValidationSummaryCssClassName);
+            if (excludePropertyErrors)
+                valtag.Data("valmsg-summary", "true");
+
+            return new LiteralTag(valtag.ToHtmlString());
         }
 
         public static LiteralTag ValidationMessage<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression)
