@@ -41,7 +41,8 @@ namespace SchoStack.Web.Html
                 return new LiteralTag(val.ToHtmlString());
 
             var valtag = new DivTag().AddClass(HtmlHelper.ValidationSummaryCssClassName);
-            if (excludePropertyErrors)
+            valtag.Append(new HtmlTag("ul").Append(new HtmlTag("li").Style("display", "none")));
+            if (!excludePropertyErrors)
                 valtag.Data("valmsg-summary", "true");
 
             return new LiteralTag(valtag.ToHtmlString());
