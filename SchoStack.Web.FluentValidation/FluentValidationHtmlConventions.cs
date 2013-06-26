@@ -20,7 +20,15 @@ namespace SchoStack.Web.Conventions
                 AddCreditCardClass(propertyValidators, h);
                 AddEqualToDataAttr(propertyValidators, h, r);
                 AddRegexData(propertyValidators, h, r);
+                AddEmailData(propertyValidators, h, r);
             });
+        }
+
+        private static string GetMessage(RequestData requestData, IPropertyValidator notEmpty)
+        {
+            MessageFormatter formatter = new MessageFormatter().AppendPropertyName(requestData.Accessor.InnerProperty.Name.SplitPascalCase());
+            string message = formatter.BuildMessage(notEmpty.ErrorMessageSource.GetString());
+            return message;
         }
 
         private static void AddEqualToDataAttr(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData request)
@@ -61,13 +69,6 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private static string GetMessage(RequestData requestData, IPropertyValidator notEmpty)
-        {
-            MessageFormatter formatter = new MessageFormatter().AppendPropertyName(requestData.Accessor.InnerProperty.Name.SplitPascalCase());
-            string message = formatter.BuildMessage(notEmpty.ErrorMessageSource.GetString());
-            return message;
-        }
-
         private static void AddLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag)
         {
             var lengthValidator = propertyValidators.OfType<LengthValidator>().FirstOrDefault();
@@ -94,6 +95,18 @@ namespace SchoStack.Web.Conventions
             if (regex != null)
             {
                 htmlTag.Data("val", true).Data("val-regex", GetMessage(requestData, regex) ?? string.Format("The value did not match the regular expression '{0}'", regex.Expression)).Data("val-regex-pattern", regex.Expression);
+            }
+        }
+
+        private static void AddEmailData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        {
+            var emailValidator = propertyValidators.OfType<EmailValidator>().FirstOrDefault();
+            if (emailValidator != null)
+            {
+                if (requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
+                    htmlTag.Data("val", true).Data("val-email", GetMessage(requestData, emailValidator) ?? string.Format("The value is not a valid email address"));
+                else
+                    htmlTag.AddClass("email");
             }
         }
     }
