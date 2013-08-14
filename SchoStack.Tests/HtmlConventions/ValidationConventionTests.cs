@@ -25,6 +25,8 @@ namespace SchoStack.Tests.HtmlConventions
             dict.Add(typeof(IValidator<TestInputModel>), new TestInputValidator());
             dep.Setup(x => x.GetService(It.IsAny<Type>())).Returns<Type>(x => dict[x]);
             HtmlConventionFactory.Add(new FluentValidationHtmlConventions(new FluentValidatorFinder(dep.Object)));
+
+            HtmlConventionFactory.Add(new CombinationConventions());
         }
 
         [Test]
@@ -162,6 +164,46 @@ namespace SchoStack.Tests.HtmlConventions
                                     {
                                         var tag = helper.Input(x => x.NotInInputModel);
                                     });
+        }
+
+        [Test]
+        public void RenderTagConditionally()
+        {
+            
+            var selectListItems = new List<SelectListItem>() {new SelectListItem() {Text = "testtext", Value = "testvalue"}};
+            var model = new TestViewModel()
+            {
+                CombinationType = new CombinationType()
+                {
+                    Items = selectListItems
+                },
+                Dropdown = selectListItems
+            };
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            var tag1 = helper.Input(x => x.CombinationType);
+            var tag2 = helper.Input(x => x.Dropdown).Attr("id", "CombinationType").Attr("name", "CombinationType");
+            Assert.AreEqual(tag1.ToHtmlString(), tag2.ToHtmlString());
+        }
+
+        [Test]
+        public void RenderTagConditionally2()
+        {
+
+            var selectListItems = new List<SelectListItem>() { new SelectListItem() { Text = "testtext", Value = "testvalue" } };
+            var model = new TestViewModel()
+            {
+                CombinationType = new CombinationType()
+                {
+                    Items = selectListItems,
+                    IsSingle = true,
+                    Name = "Text",
+                    Value = "Value"
+                },
+                Dropdown = selectListItems
+            };
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            var tag = helper.Input(x => x.CombinationType);
+            Assert.AreEqual("<div>Text<input type=\"hidden\" id=\"CombinationType\" name=\"CombinationType\" value=\"Value\" /></div>", tag.ToHtmlString());
         }
     }
 }

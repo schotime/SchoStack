@@ -41,11 +41,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\FluentValidation.MVC3.3.4.6.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="FubuCore">
-      <HintPath>..\SchoStack.Example\Bin\FubuCore.dll</HintPath>
+    <Reference Include="FubuCore, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\FubuCore.1.1.0.255\lib\FubuCore.dll</HintPath>
     </Reference>
-    <Reference Include="HtmlTags">
-      <HintPath>..\SchoStack.Example\Bin\HtmlTags.dll</HintPath>
+    <Reference Include="HtmlTags, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\HtmlTags.2.0.0.174\lib\4.0\HtmlTags.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -46,7 +46,7 @@ namespace SchoStack.Web.Conventions.Core
             return tag;
         }
 
-        private static RequestData BuildRequestData<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        public static RequestData BuildRequestData<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
         {
             var accessor = ReflectionHelper.GetAccessor(expression);
             var req = new RequestData()
@@ -73,28 +73,24 @@ namespace SchoStack.Web.Conventions.Core
         {
             return BuildTag(requestData, getTagConvention, () => new HtmlTag("span").Text(requestData.GetValue<string>()));
         }
-
+        
         private HtmlTag BuildTag(RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention, Func<HtmlTag> defaultBuilder)
         {
+            var builders = new List<Builder>();
             for (int i = _htmlConventions.Count - 1; i >= 0; i--)
             {
                 var conv = (IConventionAccessor) getTagConvention(_htmlConventions[i]);
                 for (int j = conv.Builders.Count - 1; j >= 0; j--)
                 {
-                    if (conv.Builders[j].Condition(requestData))
-                    {
-                        var tag = conv.Builders[j].BuilderFunc(requestData);
-                        if (tag != null)
-                        {
-                            return tag;
-                        }
-                    }
+                    builders.Add(conv.Builders[j]);
                 }
             }
 
-            return defaultBuilder();
+            var pipeline = new ConventionPipeline(requestData, builders);
+            var tag = pipeline.BuildHtmlTag(pipeline);
+            return tag ?? defaultBuilder();
         }
-        
+
         private void ModifyTag(HtmlTag tag, RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention)
         {
             foreach (var htmlConvention in _htmlConventions)

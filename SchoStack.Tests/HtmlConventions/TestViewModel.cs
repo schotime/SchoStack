@@ -35,6 +35,16 @@ namespace SchoStack.Tests.HtmlConventions
         public string CreditCard { get; set; }
 
         public bool NotInInputModel { get; set; }
+
+        public CombinationType CombinationType { get; set; }
+    }
+
+    public class CombinationType
+    {
+        public IEnumerable<SelectListItem> Items { get; set; }
+        public bool IsSingle { get; set; }
+        public string Name { get; set; }
+        public string Value { get; set; }
     }
 
     public class TestInputModel

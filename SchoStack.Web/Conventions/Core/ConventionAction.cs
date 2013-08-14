@@ -22,10 +22,14 @@ namespace SchoStack.Web.Conventions.Core
             Builders.Add(new Builder(Condition, builder));
         }
 
+        public void BuildBy(Func<RequestData, IConventionPipeline, HtmlTag> builder)
+        {
+            Builders.Add(new Builder(Condition, builder));
+        }
+
         public void Modify(Action<HtmlTag, RequestData> modifier)
         {
             Modifiers.Add(new Modifier(Condition, modifier));
         }
-
     }
 }
