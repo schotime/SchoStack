@@ -30,23 +30,23 @@ namespace SchoStack.Web.Conventions.Core
             
             var pipeline = new ConventionPipeline(req, _builders);
 
-            return BuildHtmlTag(pipeline);
+            return pipeline.BuildHtmlTag();
         }
 
-        public HtmlTag BuildHtmlTag(ConventionPipeline pipeline)
+        public HtmlTag BuildHtmlTag()
         {
-            foreach (var builder in _builders.Where(x => x.Condition(pipeline._requestData)))
+            foreach (var builder in _builders.Where(x => x.Condition(_requestData)))
             {
                 var pipeLineFunc = builder.BuilderFuncPipeline;
                 if (pipeLineFunc != null)
                 {
-                    var tag = pipeLineFunc(pipeline._requestData, pipeline);
+                    var tag = pipeLineFunc(_requestData, this);
                     if (tag != null)
                         return tag;
                 }
                 else
                 {
-                    var tag = builder.BuilderFunc(pipeline._requestData);
+                    var tag = builder.BuilderFunc(_requestData);
                     if (tag != null)
                         return tag;
                 }

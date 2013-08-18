@@ -87,7 +87,7 @@ namespace SchoStack.Web.Conventions.Core
             }
 
             var pipeline = new ConventionPipeline(requestData, builders);
-            var tag = pipeline.BuildHtmlTag(pipeline);
+            var tag = pipeline.BuildHtmlTag();
             return tag ?? defaultBuilder();
         }
 
