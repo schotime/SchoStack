@@ -35,13 +35,13 @@ namespace SchoStack.Web
             return this;
         }
 
-        public HandleActionBuilder<T> OnError(Func<ActionResult> result)
+        public HandleActionBuilder<T> OnModelError(Func<ActionResult> result)
         {
             _errorResult = _ => result();
             return this;
         }
 
-        public HandleActionBuilder<T> OnError(Func<ControllerContext, ActionResult> result)
+        public HandleActionBuilder<T> OnModelError(Func<ControllerContext, ActionResult> result)
         {
             _errorResult = result;
             return this;
@@ -125,13 +125,13 @@ namespace SchoStack.Web
             return this;
         }
 
-        public HandleActionBuilder<T, TRet> OnError(Func<ActionResult> result)
+        public HandleActionBuilder<T, TRet> OnModelError(Func<ActionResult> result)
         {
             _errorResult = _ => result();
             return this;
         }
 
-        public HandleActionBuilder<T, TRet> OnError(Func<ControllerContext, ActionResult> result)
+        public HandleActionBuilder<T, TRet> OnModelError(Func<ControllerContext, ActionResult> result)
         {
             _errorResult = result;
             return this;
