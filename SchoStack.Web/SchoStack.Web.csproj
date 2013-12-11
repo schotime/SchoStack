@@ -97,6 +97,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Conventions\Core\RequestData.cs" />
     <Compile Include="RouteAttribute.cs" />
+    <Compile Include="SchoStackControllerContext.cs" />
     <Compile Include="TagExtensions.cs" />
     <Compile Include="UrlExtensions.cs" />
     <Compile Include="ValidatorFinderHelper.cs" />

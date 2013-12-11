@@ -5,6 +5,47 @@ using System.Web.Mvc;
 
 namespace SchoStack.Web
 {
+    public class HandleActionBuilder
+    {
+        private readonly IInvoker _invoker;
+        private Func<ControllerContext, ActionResult> _successResult;
+        private Func<ControllerContext, ActionResult> _errorResult;
+
+        public HandleActionBuilder(IInvoker invoker)
+        {
+            _invoker = invoker;
+        }
+
+        public HandleActionBuilder OnSuccess(Func<ActionResult> result)
+        {
+            _successResult = _ => result();
+            return this;
+        }
+
+        public HandleActionBuilder OnSuccess(Func<ControllerContext, ActionResult> result)
+        {
+            _successResult = result;
+            return this;
+        }
+
+        public HandleActionBuilder OnModelError(Func<ActionResult> result)
+        {
+            _errorResult = _ => result();
+            return this;
+        }
+
+        public HandleActionBuilder OnModelError(Func<ControllerContext, ActionResult> result)
+        {
+            _errorResult = result;
+            return this;
+        }
+
+        public HandleActionBuilder<HandleActionBuilder, TRet> Returning<TRet>()
+        {
+            return new HandleActionBuilder<HandleActionBuilder, TRet>(null, _invoker, _successResult, _errorResult);
+        }
+    }
+
     public class HandleActionBuilder<T>
     {
         private readonly T _inputModel;
@@ -63,16 +104,28 @@ namespace SchoStack.Web
 
             public override void ExecuteResult(ControllerContext context)
             {
-                if (!context.Controller.ViewData.ModelState.IsValid && _builder._errorResult != null)
+                var result = ExecuteResult(new SchoStackControllerContext(context));
+                if (result != null)
                 {
-                    _builder._errorResult(context).ExecuteResult(context);
-                    return;
+                    result.ExecuteResult(context);
+                }
+            }
+
+            public ActionResult ExecuteResult(IControllerContext context)
+            {
+                if (!context.IsValidModel && _builder._errorResult != null)
+                {
+                    return _builder._errorResult(context.Context);
                 }
 
                 _builder._invoker.Execute(_builder._inputModel);
 
                 if (_builder._successResult != null)
-                    _builder._successResult(context).ExecuteResult(context);
+                {
+                    return _builder._successResult(context.Context);
+                }
+
+                return null;
             }
         }
     }
@@ -150,25 +203,35 @@ namespace SchoStack.Web
             {
                 _builder = builder;
             }
-
+            
             public override void ExecuteResult(ControllerContext context)
             {
-                if (!context.Controller.ViewData.ModelState.IsValid && _builder._errorResult != null)
+                var result = ExecuteResult(new SchoStackControllerContext(context));
+                if (result != null)
                 {
-                    _builder._errorResult(context).ExecuteResult(context);
-                    return;
+                    result.ExecuteResult(context);
+                }
+            }
+
+            public ActionResult ExecuteResult(IControllerContext context)
+            {
+                if (!context.IsValidModel && _builder._errorResult != null)
+                {
+                    return _builder._errorResult(context.Context);
                 }
 
                 var result = _builder._invoker.Execute<TRet>(_builder._inputModel);
-                var conditionResult = _builder._conditionResults.FirstOrDefault(x => x.Condition(result, context));
+                var conditionResult = _builder._conditionResults.FirstOrDefault(x => x.Condition(result, context.Context));
                 if (conditionResult != null)
                 {
-                    conditionResult.Result(result, context).ExecuteResult(context);
+                    return conditionResult.Result(result, context.Context);
                 }
-                else if (_builder._successResult != null)
+                if (_builder._successResult != null)
                 {
-                    _builder._successResult(result, context).ExecuteResult(context);
+                    return _builder._successResult(result, context.Context);
                 }
+
+                return null;
             }
         }
     }
