@@ -220,7 +220,7 @@ namespace SchoStack.Web
                     return _builder._errorResult(context.Context);
                 }
 
-                var result = _builder._invoker.Execute<TRet>(_builder._inputModel);
+                var result = _builder._inputModel == null ? _builder._invoker.Execute<TRet>() : _builder._invoker.Execute<TRet>(_builder._inputModel);
                 var conditionResult = _builder._conditionResults.FirstOrDefault(x => x.Condition(result, context.Context));
                 if (conditionResult != null)
                 {
