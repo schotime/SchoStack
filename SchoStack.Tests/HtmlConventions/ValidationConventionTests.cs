@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Routing;
 using FluentValidation;
 using Moq;
 using NUnit.Framework;
@@ -10,6 +11,7 @@ using SchoStack.Web.Conventions;
 using SchoStack.Web.Conventions.Core;
 using SchoStack.Web.FluentValidation;
 using SchoStack.Web.Html;
+using SchoStack.Web.Html.UrlForm;
 using Shouldly;
 
 namespace SchoStack.Tests.HtmlConventions
@@ -204,6 +206,20 @@ namespace SchoStack.Tests.HtmlConventions
             var helper = MvcMockHelpers.GetHtmlHelper(model);
             var tag = helper.Input(x => x.CombinationType);
             Assert.AreEqual("<div>Text<input type=\"hidden\" id=\"CombinationType\" name=\"CombinationType\" value=\"Value\" /></div>", tag.ToHtmlString());
+        }
+
+        [Test]
+        public void EnsureAllCanBeUsedWithNonExpressionBasedConventions()
+        {
+            ActionFactory.Actions.Add(typeof(TestInputModel), new ActionInfo());
+            RouteTable.Routes.Add(typeof(TestInputModel).FullName, new Route("fakeUrl", null));
+
+            var model = new TestViewModel() { CreatedAt = new DateTime(2005, 03, 04) };
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            helper.Form<TestInputModel>();
+            var tag = helper.Input(x => x.CreatedAt);
+            tag.Text().ShouldBe("20050304");
         }
     }
 }

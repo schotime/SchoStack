@@ -1,4 +1,5 @@
-﻿using HtmlTags;
+﻿using System;
+using HtmlTags;
 using SchoStack.Web.Conventions.Core;
 
 namespace SchoStack.Tests.HtmlConventions
@@ -7,7 +8,6 @@ namespace SchoStack.Tests.HtmlConventions
     {
         public CombinationConventions()
         {
-
             Inputs.If<CombinationType>().BuildBy((r,p) =>
             {
                 var val = r.GetValue<CombinationType>();
@@ -21,6 +21,11 @@ namespace SchoStack.Tests.HtmlConventions
                 return p.Build<CombinationType>(x=>x.Items);
             });
 
+            All.If<DateTime>().Modify((h, r) =>
+            {
+                var val = r.GetValue<DateTime>();
+                h.Text(val.ToString("yyyyMMdd"));
+            });
         }
     }
 }

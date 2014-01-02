@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -35,6 +36,8 @@ namespace SchoStack.Tests.HtmlConventions
         public string CreditCard { get; set; }
 
         public bool NotInInputModel { get; set; }
+
+        public DateTime CreatedAt { get; set; }
 
         public CombinationType CombinationType { get; set; }
     }
@@ -77,6 +80,8 @@ namespace SchoStack.Tests.HtmlConventions
         public decimal Decimal { get; set; }
         public double Double { get; set; }
         public string CreditCard { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 
     public class TestInputValidator : AbstractValidator<TestInputModel>

@@ -24,6 +24,7 @@ namespace Promaster.Tests
             }
 
             public override bool UnobtrusiveJavaScriptEnabled { get; set; }
+            public override bool ClientValidationEnabled { get; set; }
         }
 
         public static HtmlHelper<T> GetHtmlHelper<T>(T model)
@@ -42,7 +43,7 @@ namespace Promaster.Tests
         public static ViewContext MockViewContext(ViewDataDictionary viewDataDictionary)
         {
             var httpContext = FakeHttpContext();
-            Mock.Get(httpContext).Setup(x => x.Items).Returns(new Dictionary<string, object>());
+            Mock.Get(httpContext).Setup(x => x.Items).Returns(new Dictionary<object, object>());
 
             var mockViewContext = new FakeViewContext(
                 new ControllerContext(

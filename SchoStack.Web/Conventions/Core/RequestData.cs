@@ -33,7 +33,14 @@ namespace SchoStack.Web.Conventions.Core
             if (TagConventions.IsAssignable<T>(this))
                 return (T) val;
 
-            return (T) Convert.ChangeType(val, typeof (T));
+            try
+            {
+                return (T) Convert.ChangeType(val, typeof (T));
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidCastException(string.Format("Cannot convert '{0}' to '{1}'", (val == null ? "null" : val.GetType().ToString()), typeof(T)) ,ex);
+            }
         }
 
         public string GetAttemptedValue()

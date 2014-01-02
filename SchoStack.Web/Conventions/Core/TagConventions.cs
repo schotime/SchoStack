@@ -29,7 +29,7 @@ namespace SchoStack.Web.Conventions.Core
 
         public IConventionAction If<T>()
         {
-            return new ConventionAction(IsAssignable<T>, Builders, Modifiers);
+            return new ConventionAction(req => IsAssignable<T>(req), Builders, Modifiers);
         }
 
         public IConventionActionAttribute<TAttribute> IfAttribute<TAttribute>() where TAttribute : Attribute
@@ -39,12 +39,14 @@ namespace SchoStack.Web.Conventions.Core
 
         public static bool IsAssignable<TProperty>(RequestData x)
         {
+            if (x.Accessor == null)
+                return false;
             var type = typeof(TProperty);
             var assignable = type.IsAssignableFrom(x.Accessor.PropertyType);
-            if (!assignable && type.IsValueType)
-            {
-                assignable = typeof(Nullable<>).MakeGenericType(type).IsAssignableFrom(x.Accessor.PropertyType);
-            }
+            //if (!assignable && type.IsValueType)
+            //{
+            //    assignable = typeof(Nullable<>).MakeGenericType(type).IsAssignableFrom(x.Accessor.PropertyType);
+            //}
             return assignable;
         }
     }
