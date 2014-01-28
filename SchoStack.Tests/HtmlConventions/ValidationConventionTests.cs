@@ -221,5 +221,15 @@ namespace SchoStack.Tests.HtmlConventions
             var tag = helper.Input(x => x.CreatedAt);
             tag.Text().ShouldBe("20050304");
         }
+
+        [Test]
+        public void PropertyWithNumber()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            var tag = helper.Input(x => x.NameWithNumber2);
+            tag.HasAttr("maxlength").ShouldBe(true);
+        }
     }
 }

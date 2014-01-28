@@ -32,6 +32,11 @@ namespace SchoStack.Web.Conventions.Core
             var val = Accessor.GetValue(ViewContext.ViewData.Model);
             if (TagConventions.IsAssignable<T>(this))
                 return (T) val;
+            
+            if (typeof (T) == typeof (string))
+            {
+                return (T)(val != null ? (object)val.ToString() : (object)string.Empty);
+            }
 
             try
             {

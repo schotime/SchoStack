@@ -342,6 +342,17 @@ namespace SchoStack.Tests.HtmlConventions
 
             tag.ToString().ShouldBe("<input type=\"submit\" value=\"test\" class=\"testclass\" />");
         }
+
+        [Test]
+        public void DateTimeOffsetToString()
+        {
+            var model = new TestViewModel() { CreatedAtOffset = new DateTimeOffset(2000, 1, 1, 0, 0, 0, new TimeSpan(0, 1, 0, 0)) };
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+
+            var tag = helper.Display(x => x.CreatedAtOffset);
+
+            tag.Text().ShouldBe("1/01/2000 12:00:00 AM +01:00");
+        }
     }
 
 }

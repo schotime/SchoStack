@@ -38,8 +38,12 @@ namespace SchoStack.Tests.HtmlConventions
         public bool NotInInputModel { get; set; }
 
         public DateTime CreatedAt { get; set; }
+        public DateTimeOffset CreatedAtOffset { get; set; }
 
         public CombinationType CombinationType { get; set; }
+
+        public string NameWithNumber1 { get; set; }
+        public string NameWithNumber2 { get; set; }
     }
 
     public class CombinationType
@@ -82,6 +86,9 @@ namespace SchoStack.Tests.HtmlConventions
         public string CreditCard { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public string NameWithNumber1 { get; set; }
+        public string NameWithNumber2 { get; set; }
     }
 
     public class TestInputValidator : AbstractValidator<TestInputModel>
@@ -105,6 +112,13 @@ namespace SchoStack.Tests.HtmlConventions
             RuleFor(x => x.DisplayName)
                 .Matches("[a-zA-Z]")
                 .WithMessage("Regex No Match");
+
+            RuleFor(x => x.NameWithNumber1)
+                .Length(1, 100)
+                .NotEmpty();
+            RuleFor(x => x.NameWithNumber2)
+                .Length(1, 100)
+                .NotEmpty();
         }
     }
 }

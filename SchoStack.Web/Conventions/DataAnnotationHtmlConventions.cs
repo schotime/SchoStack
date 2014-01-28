@@ -44,7 +44,12 @@ namespace SchoStack.Web.Conventions
         
         private static void AddNumberClasses(RequestData r, HtmlTag h)
         {
-            if (r.Accessor.PropertyType == typeof(int) || r.Accessor.PropertyType == typeof(int?))
+            if (r.Accessor.PropertyType == typeof(int) || r.Accessor.PropertyType == typeof(int?)
+                || r.Accessor.PropertyType == typeof(uint) || r.Accessor.PropertyType == typeof(uint?)
+                || r.Accessor.PropertyType == typeof(long) || r.Accessor.PropertyType == typeof(long?)
+                || r.Accessor.PropertyType == typeof(ulong) || r.Accessor.PropertyType == typeof(ulong?)
+                || r.Accessor.PropertyType == typeof(short) || r.Accessor.PropertyType == typeof(short?)
+                || r.Accessor.PropertyType == typeof(ushort) || r.Accessor.PropertyType == typeof(ushort?))
             {
                 h.AddClass("digits");
             }
