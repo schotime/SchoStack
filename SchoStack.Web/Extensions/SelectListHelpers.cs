@@ -25,7 +25,7 @@ namespace SchoStack.Web.Extensions
 
         private static void AddtoList<T>(IEnumerable<T> list, Func<T, object> text, Func<T, object> value, object selected, List<SelectListItem> selectList)
         {
-            var selectedItems = (selected as IEnumerable) ?? new[] { selected };
+            var selectedItems = (selected is string) ? new[] { selected } : (selected as IEnumerable) ?? new[] { selected };
 
             selectList.AddRange(list.Select(x =>
             {

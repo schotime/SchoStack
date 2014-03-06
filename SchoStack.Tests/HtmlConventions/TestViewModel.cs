@@ -44,6 +44,14 @@ namespace SchoStack.Tests.HtmlConventions
 
         public string NameWithNumber1 { get; set; }
         public string NameWithNumber2 { get; set; }
+
+        public ArrayType[] ArrayTypes { get; set; }
+    }
+
+    public class ArrayType
+    {
+        public string StringProp { get; set; }
+        public int? IntProp { get; set; }
     }
 
     public class CombinationType
@@ -89,6 +97,8 @@ namespace SchoStack.Tests.HtmlConventions
 
         public string NameWithNumber1 { get; set; }
         public string NameWithNumber2 { get; set; }
+
+        public ArrayType[] ArrayTypes { get; set; }
     }
 
     public class TestInputValidator : AbstractValidator<TestInputModel>
@@ -119,6 +129,12 @@ namespace SchoStack.Tests.HtmlConventions
             RuleFor(x => x.NameWithNumber2)
                 .Length(1, 100)
                 .NotEmpty();
+
+            RuleFor(x => x.ArrayTypes)
+                .SetCollectionValidator(new InlineValidator<ArrayType>()
+                {
+                    v => v.RuleFor(y => y.IntProp).NotEmpty()
+                });
         }
     }
 }

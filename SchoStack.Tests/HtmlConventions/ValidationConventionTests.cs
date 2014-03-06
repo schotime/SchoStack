@@ -231,5 +231,18 @@ namespace SchoStack.Tests.HtmlConventions
             var tag = helper.Input(x => x.NameWithNumber2);
             tag.HasAttr("maxlength").ShouldBe(true);
         }
+
+        [Test]
+        public void ArrayProperty()
+        {
+            var model = new TestViewModel()
+            {
+                ArrayTypes = new[] { new ArrayType() { IntProp = 0, StringProp = "s"} }
+            };
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+            var tag = helper.Input(x => x.ArrayTypes[0].IntProp);
+            tag.HasClass("required").ShouldBe(true);
+        }
     }
 }

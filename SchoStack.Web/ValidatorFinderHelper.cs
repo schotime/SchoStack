@@ -30,7 +30,11 @@ namespace SchoStack.Web
 
                 foreach (IValueGetter valueGetter in chain.ValueGetters)
                 {
-                    if (IsGenericList(valueGetter.DeclaringType))
+                    if (valueGetter.DeclaringType.IsArray)
+                    {
+                        type = prop.PropertyType.GetElementType();
+                    }
+                    else if (IsGenericList(valueGetter.DeclaringType))
                     {
                         type = prop.PropertyType.GetGenericArguments().First();
                     }
