@@ -40,11 +40,15 @@ namespace Promaster.Tests
             return helper;
         }
 
+        public static ViewContext MockViewContext()
+        {
+            return MockViewContext(new ViewDataDictionary());
+        }
+
         public static ViewContext MockViewContext(ViewDataDictionary viewDataDictionary)
         {
             var httpContext = FakeHttpContext();
-            Mock.Get(httpContext).Setup(x => x.Items).Returns(new Dictionary<object, object>());
-
+            
             var mockViewContext = new FakeViewContext(
                 new ControllerContext(
                     httpContext,
@@ -70,6 +74,7 @@ namespace Promaster.Tests
             context.Setup(ctx => ctx.Response).Returns(response.Object);
             context.Setup(ctx => ctx.Session).Returns(session.Object);
             context.Setup(ctx => ctx.Server).Returns(server.Object);
+            context.Setup(x => x.Items).Returns(new Dictionary<object, object>());
 
             response.Setup(x => x.ApplyAppPathModifier(It.IsAny<string>())).Returns((string p) => p);
 

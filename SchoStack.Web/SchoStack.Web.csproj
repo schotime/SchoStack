@@ -97,6 +97,7 @@
     <Compile Include="LoopHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Conventions\Core\RequestData.cs" />
+    <Compile Include="Reflection\ReflectionUtil.cs" />
     <Compile Include="RouteAttribute.cs" />
     <Compile Include="SchoStackControllerContext.cs" />
     <Compile Include="TagExtensions.cs" />

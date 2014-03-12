@@ -72,6 +72,7 @@
     <Compile Include="HtmlConventions\TestViewModel.cs" />
     <Compile Include="HtmlConventions\ValidationConventionTests.cs" />
     <Compile Include="HtmlConventions\ViewContextTestExtensions.cs" />
+    <Compile Include="LessStronglyTypedConventions.cs" />
     <Compile Include="MvcMockHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

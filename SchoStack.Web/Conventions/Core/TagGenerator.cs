@@ -24,9 +24,21 @@ namespace SchoStack.Web.Conventions.Core
             return tag;
         }
 
+        public HtmlTag GenerateInputFor(ViewContext viewContext, Accessor accessor)
+        {
+            var tag = GenerateTag(viewContext, accessor, x => x.Inputs);
+            return tag;
+        }
+
         public HtmlTag GenerateDisplayFor<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
         {
             var tag = GenerateTag(viewContext, expression, x => x.Displays);
+            return tag;
+        }
+
+        public HtmlTag GenerateDisplayFor(ViewContext viewContext, Accessor accessor)
+        {
+            var tag = GenerateTag(viewContext, accessor, x => x.Displays);
             return tag;
         }
 
@@ -36,26 +48,41 @@ namespace SchoStack.Web.Conventions.Core
             return tag;
         }
 
-        private HtmlTag GenerateTag<TModel, TProperty>(ViewContext viewContext, 
-            Expression<Func<TModel, TProperty>> expression,
-            Func<HtmlConvention, ITagConventions> getTagConvention)
+        public HtmlTag GenerateLabelFor(ViewContext viewContext, Accessor accessor)
         {
-            var req = BuildRequestData(viewContext, expression);
+            var tag = GenerateTag(viewContext, accessor, x => x.Labels);
+            return tag;
+        }
+
+        private HtmlTag GenerateTag<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression, Func<HtmlConvention, ITagConventions> getTagConvention)
+        {
+            var accessor = ReflectionHelper.GetAccessor(expression);
+            return GenerateTag(viewContext, accessor, getTagConvention);
+        }
+
+        private HtmlTag GenerateTag(ViewContext viewContext, Accessor accessor, Func<HtmlConvention, ITagConventions> getTagConvention)
+        {
+            var req = BuildRequestData(viewContext, accessor);
             var tag = BuildTag(req, getTagConvention);
             ModifyTag(tag, req, getTagConvention);
             return tag;
         }
 
+        public static RequestData BuildRequestData(ViewContext viewContext, Accessor accessor)
+        {
+            var req = new RequestData()
+            {
+                ViewContext = viewContext,
+                Accessor = accessor,
+                InputType = viewContext.HttpContext.Items[FORMINPUTTYPE] as Type
+            };
+            return req;
+        }
+
         public static RequestData BuildRequestData<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
         {
             var accessor = ReflectionHelper.GetAccessor(expression);
-            var req = new RequestData()
-                      {
-                          ViewContext = viewContext,
-                          Accessor = accessor,
-                          InputType = viewContext.HttpContext.Items[FORMINPUTTYPE] as Type
-                      };
-            return req;
+            return BuildRequestData(viewContext, accessor);
         }
 
         public T GenerateTagFor<T>(ViewContext viewContext, Func<T> builder) where T : HtmlTag

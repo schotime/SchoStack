@@ -13,10 +13,25 @@ namespace SchoStack.Web
             _resolver = resolver;
         }
 
+        //public bool LookForBaseType = false;
+
         public TOutput Execute<TOutput>(object inputModel)
         {
             var type = typeof(IHandler<,>).MakeGenericType(inputModel.GetType(), typeof(TOutput));
+            //var inputType = inputModel.GetType();
+            //var outputType = typeof(TOutput);
+            //var type = typeof(IHandler<,>).MakeGenericType(inputType, outputType);
             var thandler = _resolver(type);
+            //if (LookForBaseType && thandler == null)
+            //{
+            //    while (inputType.BaseType != typeof(o))
+            //    {
+            //        type = typeof (IHandler<,>).MakeGenericType(inputType, outputType);
+            //        thandler = _resolver(type);
+            //        if (thandler != null)
+            //            break;
+            //    }
+            //}
             EnsureHandlerFound(thandler, type);
             var methodName = GetMethodName(x => x.Handle(null));
             var method = thandler.GetType().GetMethod(methodName);
