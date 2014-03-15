@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using FubuCore.Reflection;
@@ -11,6 +13,14 @@ namespace SchoStack.Web.Html
 {
     public static class TagExtensions
     {
+        public static HtmlProfileContext Profile(this HtmlHelper helper, IHtmlProfile profile)
+        {
+            var existingContext = helper.ViewContext.HttpContext.Items[HtmlProfileContext.SchostackWebProfile] as HtmlProfileContext;
+            var htmlProfileContext = new HtmlProfileContext(helper, profile, existingContext);
+            helper.ViewContext.HttpContext.Items[HtmlProfileContext.SchostackWebProfile] = htmlProfileContext;
+            return htmlProfileContext;
+        }
+
         public static HtmlTag Input<TModel, TProperty>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression)
         {
             var tag = new TagGenerator(HtmlConventionFactory.HtmlConventions);
@@ -124,6 +134,7 @@ namespace SchoStack.Web.Html
         }
 
     }
+   
 }
 
 namespace SchoStack.Web.Html.Url

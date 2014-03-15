@@ -59,6 +59,9 @@ namespace SchoStack.Web.Conventions
         private static HtmlTag BuildSelectList(RequestData req)
         {
             var list = req.GetValue<IEnumerable<SelectListItem>>();
+            if (list == null)
+                return null;
+
             var attemptedVal = req.GetAttemptedValue();
             var multiple = attemptedVal != null ? attemptedVal.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries).Select(x=>x.Trim()) : null;
             var drop = new SelectTag();

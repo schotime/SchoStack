@@ -22,9 +22,14 @@ namespace SchoStack.Web.Conventions.Core
             get { return Accessor == null ? null : string.Join(".", Accessor.PropertyNames).Replace(".[", "["); }
         }
 
+        public virtual Type GetPropertyType()
+        {
+            return Accessor.PropertyType;
+        }
+
         public Type InputType { get; set; }
 
-        public T GetValue<T>()
+        public virtual T GetValue<T>()
         {
             if (ViewContext.ViewData.Model == null)
                 return default(T);
@@ -53,6 +58,29 @@ namespace SchoStack.Web.Conventions.Core
             return !ViewContext.ViewData.ModelState.IsValid && ViewContext.ViewData.ModelState.ContainsKey(Name)
                        ? ViewContext.ViewData.ModelState[Name].Value.AttemptedValue
                        : null;
+        }
+    }
+
+    public class ValueRequestData<T> : RequestData
+    {
+        private readonly object _value;
+
+        public ValueRequestData(RequestData requestData, T value)
+        {
+            _value = value;
+            this.Accessor = requestData.Accessor;
+            this.ViewContext = requestData.ViewContext;
+            this.InputType = requestData.InputType;
+        }
+
+        public override Type GetPropertyType()
+        {
+            return typeof(T);
+        }
+
+        public override TModel GetValue<TModel>()
+        {
+            return (TModel)_value;
         }
     }
 }

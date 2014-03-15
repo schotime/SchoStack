@@ -10,6 +10,7 @@ namespace SchoStack.Web.Conventions.Core
     public interface IConventionPipeline
     {
         HtmlTag Build<T>(Expression<Func<T, object>> prop);
+        HtmlTag Build<T>(T value);
     }
 
     public class ConventionPipeline : IConventionPipeline
@@ -33,7 +34,28 @@ namespace SchoStack.Web.Conventions.Core
             return pipeline.BuildHtmlTag();
         }
 
-        public HtmlTag BuildHtmlTag()
+        public HtmlTag Build<T>(T value)
+        {
+            var pipeline = new ConventionPipeline(new ValueRequestData<T>(_requestData, value), _builders);
+            return pipeline.BuildHtmlTagNoPipe();
+        }
+
+        internal HtmlTag BuildHtmlTagNoPipe()
+        {
+            foreach (var builder in _builders.Where(x => x.Condition(_requestData)))
+            {
+                if (builder.BuilderFunc != null)
+                {
+                    var tag = builder.BuilderFunc(_requestData);
+                    if (tag != null)
+                        return tag;
+                }
+            }
+
+            return null;
+        }
+
+        internal HtmlTag BuildHtmlTag()
         {
             foreach (var builder in _builders.Where(x => x.Condition(_requestData)))
             {

@@ -42,7 +42,7 @@ namespace SchoStack.Web.Conventions.Core
             if (x.Accessor == null)
                 return false;
             var type = typeof(TProperty);
-            var assignable = type.IsAssignableFrom(x.Accessor.PropertyType);
+            var assignable = type.IsAssignableFrom(x.GetPropertyType());
             //if (!assignable && type.IsValueType)
             //{
             //    assignable = typeof(Nullable<>).MakeGenericType(type).IsAssignableFrom(x.Accessor.PropertyType);

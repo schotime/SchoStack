@@ -11,11 +11,25 @@ namespace SchoStack.Web.Conventions.Core
     public class TagGenerator
     {
         public const string FORMINPUTTYPE = "__formType";
-        private readonly List<HtmlConvention> _htmlConventions;
+        private readonly IHtmlProfile _globalHtmlProfile;
 
         public TagGenerator(List<HtmlConvention> htmlConventions)
         {
-            _htmlConventions = htmlConventions;
+            _globalHtmlProfile = new GlobalHtmlProfile(htmlConventions);
+        }
+
+        public TagGenerator(IHtmlProfile globalHtmlProfile)
+        {
+            _globalHtmlProfile = globalHtmlProfile;
+        }
+
+        private IHtmlProfile GetHtmlProfile(ViewContext viewContext)
+        {
+            var profileContext = viewContext.HttpContext.Items[HtmlProfileContext.SchostackWebProfile] as HtmlProfileContext;
+            if (profileContext == null)
+                return _globalHtmlProfile;
+
+            return profileContext.HtmlProfile;
         }
 
         public HtmlTag GenerateInputFor<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
@@ -62,9 +76,10 @@ namespace SchoStack.Web.Conventions.Core
 
         private HtmlTag GenerateTag(ViewContext viewContext, Accessor accessor, Func<HtmlConvention, ITagConventions> getTagConvention)
         {
+            var profile = GetHtmlProfile(viewContext);
             var req = BuildRequestData(viewContext, accessor);
-            var tag = BuildTag(req, getTagConvention);
-            ModifyTag(tag, req, getTagConvention);
+            var tag = BuildTag(req, profile.HtmlConventions, getTagConvention);
+            ModifyTag(tag, req, profile.HtmlConventions, getTagConvention);
             return tag;
         }
 
@@ -87,26 +102,27 @@ namespace SchoStack.Web.Conventions.Core
 
         public T GenerateTagFor<T>(ViewContext viewContext, Func<T> builder) where T : HtmlTag
         {
+            var profile = GetHtmlProfile(viewContext);
             var req = new RequestData() { 
                 ViewContext = viewContext, 
                 InputType = viewContext.HttpContext.Items[FORMINPUTTYPE] as Type 
             };
             var tag = builder();
-            ModifyTag(tag, req, x => x.All);
+            ModifyTag(tag, req, profile.HtmlConventions, x => x.All);
             return tag;
         }
 
-        private HtmlTag BuildTag(RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention)
+        private HtmlTag BuildTag(RequestData requestData, List<HtmlConvention> htmlConventions, Func<HtmlConvention, ITagConventions> getTagConvention)
         {
-            return BuildTag(requestData, getTagConvention, () => new HtmlTag("span").Text(requestData.GetValue<string>()));
+            return BuildTag(requestData, htmlConventions, getTagConvention, () => new HtmlTag("span").Text(requestData.GetValue<string>()));
         }
-        
-        private HtmlTag BuildTag(RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention, Func<HtmlTag> defaultBuilder)
+
+        private HtmlTag BuildTag(RequestData requestData, List<HtmlConvention> htmlConventions, Func<HtmlConvention, ITagConventions> getTagConvention, Func<HtmlTag> defaultBuilder)
         {
             var builders = new List<Builder>();
-            for (int i = _htmlConventions.Count - 1; i >= 0; i--)
+            for (int i = htmlConventions.Count - 1; i >= 0; i--)
             {
-                var conv = (IConventionAccessor) getTagConvention(_htmlConventions[i]);
+                var conv = (IConventionAccessor)getTagConvention(htmlConventions[i]);
                 for (int j = conv.Builders.Count - 1; j >= 0; j--)
                 {
                     builders.Add(conv.Builders[j]);
@@ -118,9 +134,9 @@ namespace SchoStack.Web.Conventions.Core
             return tag ?? defaultBuilder();
         }
 
-        private void ModifyTag(HtmlTag tag, RequestData requestData, Func<HtmlConvention, ITagConventions> getTagConvention)
+        private void ModifyTag(HtmlTag tag, RequestData requestData, List<HtmlConvention> htmlConventions, Func<HtmlConvention, ITagConventions> getTagConvention)
         {
-            foreach (var htmlConvention in _htmlConventions)
+            foreach (var htmlConvention in htmlConventions)
             {
                 foreach (var convention in ((IConventionAccessor) htmlConvention.All).Modifiers.Where(x => x.Condition(requestData)))
                 {

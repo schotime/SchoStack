@@ -69,6 +69,8 @@
     <Compile Include="HtmlConventions\DataAnnotValidationConventionTests.cs" />
     <Compile Include="HtmlConventions\DataAnnotationConventionTests.cs" />
     <Compile Include="HtmlConventions\DefaultHtmlConventionTests.cs" />
+    <Compile Include="HtmlConventions\HtmlProfileTests.cs" />
+    <Compile Include="HtmlConventions\ReusingConventionTests.cs" />
     <Compile Include="HtmlConventions\TestViewModel.cs" />
     <Compile Include="HtmlConventions\ValidationConventionTests.cs" />
     <Compile Include="HtmlConventions\ViewContextTestExtensions.cs" />

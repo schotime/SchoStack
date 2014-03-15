@@ -67,6 +67,9 @@
     <Compile Include="AttribValidatorFinder.cs" />
     <Compile Include="ChildMessaging.cs" />
     <Compile Include="Conventions\Core\ConventionPipeline.cs" />
+    <Compile Include="Conventions\Core\GlobalHtmlProfile.cs" />
+    <Compile Include="Conventions\Core\HtmlProfileContext.cs" />
+    <Compile Include="Conventions\Core\IHtmlProfile.cs" />
     <Compile Include="Conventions\DataAnnotationHtmlConventions.cs" />
     <Compile Include="Conventions\DataAnnotationValidationHtmlConventions.cs" />
     <Compile Include="Conventions\DefaultHtmlConventions.cs" />
