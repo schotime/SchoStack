@@ -76,6 +76,7 @@
     <Compile Include="HtmlConventions\ViewContextTestExtensions.cs" />
     <Compile Include="LessStronglyTypedConventions.cs" />
     <Compile Include="MvcMockHelpers.cs" />
+    <Compile Include="NestedObjectUrlCreationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -27,6 +27,13 @@ namespace Promaster.Tests
             public override bool ClientValidationEnabled { get; set; }
         }
 
+        public static UrlHelper GetUrlHelper(string url)
+        {
+            HttpContextBase context = FakeHttpContext();
+            context.Request.SetupRequestUrl(url);
+            return new UrlHelper(new RequestContext(context, new RouteData()), RouteTable.Routes);
+        }
+
         public static HtmlHelper<T> GetHtmlHelper<T>(T model)
         {
             var viewdata = new ViewDataDictionary(model);

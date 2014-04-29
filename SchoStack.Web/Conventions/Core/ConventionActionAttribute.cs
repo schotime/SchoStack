@@ -21,6 +21,15 @@ namespace SchoStack.Web.Conventions.Core
             }));
         }
 
+        public void BuildBy(Func<RequestData, TAttribute, IConventionPipeline, HtmlTag> builder)
+        {
+            Builders.Add(new Builder(Condition, (req, pipe) =>
+            {
+                var attribute = (TAttribute)req.Accessor.InnerProperty.GetCustomAttributes(typeof(TAttribute), true).First();
+                return builder(req, attribute, pipe);
+            }));
+        }
+
         public void Modify(Action<HtmlTag, RequestData, TAttribute> modifier)
         {
             Modifiers.Add(new Modifier(Condition, (tag, req) =>

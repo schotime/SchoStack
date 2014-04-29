@@ -1,6 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -18,7 +23,7 @@ namespace SchoStack.Web.Url
             ActionInfo actionInfo;
             if (ActionFactory.Actions.TryGetValue(model.GetType(), out actionInfo))
             {
-                var dict = CreateRouteValueDictionary(model);
+                var dict = GenerateDict(model);
                 var url = urlHelper.RouteUrl(model.GetType().FullName, dict);
                 return url;
             }
@@ -31,58 +36,130 @@ namespace SchoStack.Web.Url
             ActionInfo actionInfo;
             if (ActionFactory.Actions.TryGetValue(model.GetType(), out actionInfo))
             {
-                var modelType = model.GetType();
-                foreach (string key in urlHelper.RequestContext.HttpContext.Request.QueryString.AllKeys)
+                var controllerContext = new ControllerContext(urlHelper.RequestContext, new AController());
+                var modelBound = (T)new DefaultModelBinder().BindModel(controllerContext, new ModelBindingContext()
                 {
-                    var val = urlHelper.RequestContext.HttpContext.Request.QueryString[key];
-                    var prop = modelType.GetProperty(key, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-                    if (prop != null)
-                    {
-                        try
-                        {
-                            object conValue = val;
-                            if (ActionFactory.StringToTypeConverters.ContainsKey(prop.PropertyType))
-                                conValue = ActionFactory.StringToTypeConverters[prop.PropertyType](val);
+                    ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => (object) model, typeof (T)),
+                    ModelName = null,
+                    ModelState = new ModelStateDictionary(),
+                    PropertyFilter = null,
+                    ValueProvider = new NameValueCollectionValueProvider(urlHelper.RequestContext.HttpContext.Request.QueryString, CultureInfo.InvariantCulture)
+                });
 
-                            var u = Nullable.GetUnderlyingType(prop.PropertyType);
-                            object newval = Convert.ChangeType(conValue, u ?? prop.PropertyType);
-                            prop.SetValue(model, newval, null);
-                        }
-                        catch {}
-                    }
-                }
                 foreach (var modifier in modifiers)
                 {
-                    modifier(model);
+                    modifier(modelBound);
                 }
-                var dict = CreateRouteValueDictionary(model);
-                var url = urlHelper.RouteUrl(model.GetType().FullName, dict);
+
+                var dict = GenerateDict(modelBound);
+                var url = urlHelper.RouteUrl(typeof(T).FullName, dict);
                 return url;
             }
             throw new Exception("Type specified cannot be found to generate Url");
         }
-
-        public static RouteValueDictionary CreateRouteValueDictionary(object model)
+        
+        private class AController : ControllerBase
         {
-            var dict = new RouteValueDictionary();
-            foreach (var prop in model.GetType().GetProperties())
+            protected override void ExecuteCore()
             {
-                if (prop.PropertyType != typeof(string) && prop.PropertyType.IsClass)
-                    continue;
                 
-                var val = prop.GetValue(model, null);
-                if (val == null || Equals(val, GetDefault(prop.PropertyType)))
-                {
-                    continue;
-                }
-                var key = ActionFactory.PropertyNameModifier(prop.Name);
-
-                if (ActionFactory.TypeFormatters.ContainsKey(prop.PropertyType))
-                    val = ActionFactory.TypeFormatters[prop.PropertyType](val);
-                
-                dict[key] = val;
             }
+        }
+
+        public static RouteValueDictionary GenerateDict(object o, string prefix = "", RouteValueDictionary dict = null)
+        {
+            if (o == null)
+                return dict;
+            
+            Type t = o.GetType();
+
+            dict = dict ?? new RouteValueDictionary();
+            var sb = new StringBuilder();
+
+            foreach (PropertyInfo p in t.GetProperties())
+            {
+                if (IsConvertible(p.PropertyType))
+                {
+                    var val = p.GetValue(o, null);
+                    if (val == null || Equals(val, GetDefault(p.PropertyType)))
+                        continue;
+
+                    if (ActionFactory.TypeFormatters.ContainsKey(p.PropertyType))
+                        val = ActionFactory.TypeFormatters[p.PropertyType](val);
+
+                    var key = ActionFactory.PropertyNameModifier(prefix + p.Name);
+                    dict.Add(key, Convert.ToString(val));
+                }
+                else if (IsEnumerable(p.PropertyType))
+                {
+                    var i = 0;
+                    foreach (object sub in (IEnumerable)p.GetValue(o, null) ?? new object[0])
+                    {
+                        GenerateDict(sub, prefix + p.Name + "[" + (i++) + "]" + ".", dict);
+                    }
+                }
+                else if (SimpleGetter(p))
+                {
+                    GenerateDict(p.GetValue(o, null), prefix + p.Name + "=", dict);
+                }
+            }
+
+            if (IsEnumerable(t))
+            {
+                foreach (object sub in (IEnumerable)o)
+                {
+                    sb.Append(GenerateDict(sub, dict: dict));
+                }
+            }
+
             return dict;
+        }
+
+        internal static Type[] ConvertibleTypes =
+        {
+            typeof (bool), typeof (byte), typeof (char),
+            typeof (DateTime), typeof (decimal), typeof (double), typeof (float), typeof (int),
+            typeof (long), typeof (sbyte), typeof (short), typeof (string), typeof (uint),
+            typeof (ulong), typeof (ushort)
+        };
+
+        /// <summary>
+        /// Returns true if this Type matches any of a set of Types.
+        /// </summary>
+        /// <param name="type">This type.</param>
+        /// <param name="types">The Types to compare this Type to.</param>
+        public static bool In(Type type, params Type[] types)
+        {
+            foreach (Type t in types)
+            {
+                if (t.IsAssignableFrom(type) || (Nullable.GetUnderlyingType(type) != null && t.IsAssignableFrom(Nullable.GetUnderlyingType(type))))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if this Type is one of the types accepted by Convert.ToString() 
+        /// (other than object).
+        /// </summary>
+        public static bool IsConvertible(Type t) { return In(t, ConvertibleTypes); }
+
+        /// <summary>
+        /// Gets whether this type is enumerable.
+        /// </summary>
+        public static bool IsEnumerable(Type t)
+        {
+            return typeof(IEnumerable).IsAssignableFrom(t);
+        }
+
+        /// <summary>
+        /// Returns true if this property's getter is public, has no arguments, and has no 
+        /// generic type parameters.
+        /// </summary>
+        public static bool SimpleGetter(PropertyInfo info)
+        {
+            MethodInfo method = info.GetGetMethod(false);
+            return method != null && method.GetParameters().Length == 0 && method.GetGenericArguments().Length == 0;
         }
 
         private static readonly Dictionary<Type, object> Defaults = new Dictionary<Type, object>()
