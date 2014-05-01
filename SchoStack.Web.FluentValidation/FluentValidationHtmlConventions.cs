@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentValidation.Internal;
@@ -10,66 +11,95 @@ namespace SchoStack.Web.Conventions
 {
     public class FluentValidationHtmlConventions : HtmlConvention
     {
-        public FluentValidationHtmlConventions(IValidatorFinder validatorFinder)
+        private readonly bool _msUnobtrusive;
+        public List<Action<IEnumerable<IPropertyValidator>, HtmlTag, RequestData>> RuleProviders = new List<Action<IEnumerable<IPropertyValidator>, HtmlTag, RequestData>>();
+
+        public FluentValidationHtmlConventions() 
+            : this(new FluentValidatorFinder(), true) 
         {
+        }
+
+        public FluentValidationHtmlConventions(IValidatorFinder validatorFinder)
+            : this(validatorFinder, true)
+        {
+        }
+
+        public FluentValidationHtmlConventions(IValidatorFinder validatorFinder, bool msUnobtrusive)
+        {
+            _msUnobtrusive = msUnobtrusive;
+            RuleProviders.Add(AddLengthClasses);
+            RuleProviders.Add(AddRequiredClass);
+            RuleProviders.Add(AddCreditCardClass);
+            RuleProviders.Add(AddEqualToDataAttr);
+            RuleProviders.Add(AddRegexData);
+            RuleProviders.Add(AddEmailData);
+
             Inputs.Always.Modify((h, r) =>
             {
                 var propertyValidators = validatorFinder.FindValidators(r);
-                AddLengthClasses(propertyValidators, h);
-                AddRequiredClass(propertyValidators, h, r);
-                AddCreditCardClass(propertyValidators, h);
-                AddEqualToDataAttr(propertyValidators, h, r);
-                AddRegexData(propertyValidators, h, r);
-                AddEmailData(propertyValidators, h, r);
+                foreach (var ruleProvider in RuleProviders)
+                {
+                    ruleProvider.Invoke(propertyValidators, h, r);
+                }
             });
         }
 
-        private static string GetMessage(RequestData requestData, IPropertyValidator notEmpty)
+        public static string GetMessage(RequestData requestData, IPropertyValidator propertyValidator)
         {
             MessageFormatter formatter = new MessageFormatter().AppendPropertyName(requestData.Accessor.InnerProperty.Name.SplitPascalCase());
-            string message = formatter.BuildMessage(notEmpty.ErrorMessageSource.GetString());
+            string message = formatter.BuildMessage(propertyValidator.ErrorMessageSource.GetString());
             return message;
         }
 
-        private static void AddEqualToDataAttr(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData request)
+        private void AddEqualToDataAttr(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData request)
         {
             var equal = propertyValidators.OfType<EqualValidator>().FirstOrDefault();
             if (equal != null)
             {
-                htmlTag.Data("val", true);
-
                 MessageFormatter formatter = new MessageFormatter()
                     .AppendPropertyName(request.Accessor.InnerProperty.Name.SplitPascalCase())
                     .AppendArgument("PropertyValue", equal.MemberToCompare.Name.SplitPascalCase());
                 string message = formatter.BuildMessage(equal.ErrorMessageSource.GetString());
 
-                htmlTag.Data("val-equalto", message);
-
-                if (request.Accessor.PropertyNames.Length > 1)
+                if (_msUnobtrusive)
                 {
-                    htmlTag.Data("val-equalto-other", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
+                    htmlTag.Data("val", true);
+                    htmlTag.Data("val-equalto", message);
+                    if (request.Accessor.PropertyNames.Length > 1)
+                        htmlTag.Data("val-equalto-other", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
+                    else
+                        htmlTag.Data("val-equalto-other", "*." + equal.MemberToCompare.Name);
                 }
                 else
                 {
-                    htmlTag.Data("val-equalto-other", "*." + equal.MemberToCompare.Name);
+                    htmlTag.Data("msg-equalto", message);
+                    if (request.Accessor.PropertyNames.Length > 1)
+                        htmlTag.Data("rule-equalto", "#" + request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
+                    else
+                        htmlTag.Data("rule-equalto", "#" + equal.MemberToCompare.Name);
                 }
             }
         }
 
-        private static void AddRequiredClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        private void AddRequiredClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var notEmpty = propertyValidators.FirstOrDefault(x => x.GetType() == typeof (NotEmptyValidator)
                                                                || x.GetType() == typeof (NotNullValidator));
             if (notEmpty != null)
             {
                 if (requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
-                    htmlTag.Data("val", true).Data("val-required", GetMessage(requestData, notEmpty) ?? string.Empty);
+                {
+                    if (_msUnobtrusive) 
+                        htmlTag.Data("val", true).Data("val-required", GetMessage(requestData, notEmpty) ?? string.Empty);
+                    else    
+                        htmlTag.Data("rule-required", true).Data("msg-required", GetMessage(requestData, notEmpty) ?? string.Empty);
+                }
                 else
                     htmlTag.AddClass("required");
             }
         }
 
-        private static void AddLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag)
+        private void AddLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var lengthValidator = propertyValidators.OfType<LengthValidator>().FirstOrDefault();
             if (lengthValidator != null)
@@ -77,34 +107,61 @@ namespace SchoStack.Web.Conventions
                 htmlTag.Attr("maxlength", lengthValidator.Max);
                 if (lengthValidator.Min > 0)
                     htmlTag.Attr("minlength", lengthValidator.Min);
+
+                if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
+                {
+                    htmlTag.Data("rule-maxlength", lengthValidator.Max);
+                    if (lengthValidator.Min > 0)
+                        htmlTag.Data("rule-minlength", lengthValidator.Min);
+                }
             }
         }
 
-        private static void AddCreditCardClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag)
+        private void AddCreditCardClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var lengthValidator = propertyValidators.OfType<CreditCardValidator>().FirstOrDefault();
             if (lengthValidator != null)
             {
-                htmlTag.AddClass("creditcard");
+                if (requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
+                {
+                    if (!_msUnobtrusive)
+                    {
+                        htmlTag.Data("rule-creditcard", true);
+                    }
+                }
+                else
+                {
+                    htmlTag.AddClass("creditcard");    
+                }
             }
         }
 
-        private static void AddRegexData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        private void AddRegexData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var regex = propertyValidators.OfType<RegularExpressionValidator>().FirstOrDefault();
-            if (regex != null)
+            if (regex != null && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
             {
-                htmlTag.Data("val", true).Data("val-regex", GetMessage(requestData, regex) ?? string.Format("The value did not match the regular expression '{0}'", regex.Expression)).Data("val-regex-pattern", regex.Expression);
+                var msg = GetMessage(requestData, regex) ?? string.Format("The value did not match the regular expression '{0}'", regex.Expression);
+                if (_msUnobtrusive)
+                    htmlTag.Data("val", true).Data("val-regex", msg).Data("val-regex-pattern", regex.Expression);
+                else
+                    htmlTag.Data("rule-regex", regex.Expression).Data("msg-regex", msg);
             }
         }
 
-        private static void AddEmailData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        private void AddEmailData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var emailValidator = propertyValidators.OfType<EmailValidator>().FirstOrDefault();
             if (emailValidator != null)
             {
                 if (requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
-                    htmlTag.Data("val", true).Data("val-email", GetMessage(requestData, emailValidator) ?? string.Format("The value is not a valid email address"));
+                {
+                    var msg = GetMessage(requestData, emailValidator) ?? string.Format("The value is not a valid email address");
+                    if (_msUnobtrusive) 
+                        htmlTag.Data("val", true).Data("val-email", msg);
+                    else
+                        htmlTag.Data("rule-email", true).Data("msg-email", msg);
+                }
                 else
                     htmlTag.AddClass("email");
             }

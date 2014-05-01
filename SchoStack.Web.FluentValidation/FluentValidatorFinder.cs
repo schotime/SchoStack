@@ -19,6 +19,8 @@ namespace SchoStack.Web.FluentValidation
     {
         private readonly IDependencyResolver _resolver;
 
+        public FluentValidatorFinder() : this(DependencyResolver.Current) { }
+
         public FluentValidatorFinder(IDependencyResolver resolver)
         {
             _resolver = resolver;

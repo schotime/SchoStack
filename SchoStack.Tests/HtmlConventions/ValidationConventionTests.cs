@@ -80,6 +80,7 @@ namespace SchoStack.Tests.HtmlConventions
         {
             var model = new TestViewModel();
             var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.UnobtrusiveJavaScriptEnabled = true;
             helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
             var tag = helper.Input(x => x.DisplayName);
             tag.Attr("data-val-regex").ShouldBe("Regex No Match");
