@@ -78,7 +78,7 @@ namespace SchoStack.Web.Url
 
             foreach (PropertyInfo p in t.GetProperties())
             {
-                if (IsConvertible(p.PropertyType))
+                if (p.PropertyType.IsEnum || IsConvertible(p.PropertyType))
                 {
                     var val = p.GetValue(o, null);
                     if (val == null || Equals(val, GetDefault(p.PropertyType)))
@@ -142,7 +142,10 @@ namespace SchoStack.Web.Url
         /// Returns true if this Type is one of the types accepted by Convert.ToString() 
         /// (other than object).
         /// </summary>
-        public static bool IsConvertible(Type t) { return In(t, ConvertibleTypes); }
+        public static bool IsConvertible(Type t)
+        {
+            return In(t, ConvertibleTypes);
+        }
 
         /// <summary>
         /// Gets whether this type is enumerable.

@@ -33,6 +33,8 @@ namespace SchoStack.Web.Conventions
             RuleProviders.Add(AddEqualToDataAttr);
             RuleProviders.Add(AddRegexData);
             RuleProviders.Add(AddEmailData);
+            RuleProviders.Add(AddMinLengthClasses);
+            RuleProviders.Add(AddMaxLengthClasses);
 
             Inputs.Always.Modify((h, r) =>
             {
@@ -51,7 +53,7 @@ namespace SchoStack.Web.Conventions
             return message;
         }
 
-        private void AddEqualToDataAttr(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData request)
+        public void AddEqualToDataAttr(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData request)
         {
             var equal = propertyValidators.OfType<EqualValidator>().FirstOrDefault();
             if (equal != null)
@@ -81,7 +83,7 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private void AddRequiredClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        public void AddRequiredClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var notEmpty = propertyValidators.FirstOrDefault(x => x.GetType() == typeof (NotEmptyValidator)
                                                                || x.GetType() == typeof (NotNullValidator));
@@ -99,25 +101,50 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private void AddLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        public void AddLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var lengthValidator = propertyValidators.OfType<LengthValidator>().FirstOrDefault();
             if (lengthValidator != null)
             {
                 htmlTag.Attr("maxlength", lengthValidator.Max);
-                if (lengthValidator.Min > 0)
-                    htmlTag.Attr("minlength", lengthValidator.Min);
 
                 if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
                 {
-                    htmlTag.Data("rule-maxlength", lengthValidator.Max);
-                    if (lengthValidator.Min > 0)
-                        htmlTag.Data("rule-minlength", lengthValidator.Min);
+                    htmlTag.Data("rule-range", "[" + lengthValidator.Min + "," + lengthValidator.Max + "]");
+                    htmlTag.Data("msg-range", GetMessage(requestData, lengthValidator) ?? string.Empty);
                 }
             }
         }
 
-        private void AddCreditCardClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        public void AddMaxLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        {
+            var maxlengthValidator = propertyValidators.OfType<MaximumLengthValidator>().FirstOrDefault();
+            if (maxlengthValidator != null)
+            {
+                htmlTag.Attr("maxlength", maxlengthValidator.Max);
+
+                if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
+                {
+                    htmlTag.Data("rule-maxlength", maxlengthValidator.Max);
+                    htmlTag.Data("msg-maxlength", GetMessage(requestData, maxlengthValidator) ?? string.Empty);
+                }
+            }
+        }
+
+        public void AddMinLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        {
+            var minlengthValidator = propertyValidators.OfType<MinimumLengthValidator>().FirstOrDefault();
+            if (minlengthValidator != null)
+            {
+                if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
+                {
+                    htmlTag.Data("rule-minlength", minlengthValidator.Min);
+                    htmlTag.Data("msg-minlength", GetMessage(requestData, minlengthValidator) ?? string.Empty);
+                }
+            }
+        }
+
+        public void AddCreditCardClass(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var lengthValidator = propertyValidators.OfType<CreditCardValidator>().FirstOrDefault();
             if (lengthValidator != null)
@@ -136,7 +163,7 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private void AddRegexData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        public void AddRegexData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var regex = propertyValidators.OfType<RegularExpressionValidator>().FirstOrDefault();
             if (regex != null && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
@@ -149,7 +176,7 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private void AddEmailData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        public void AddEmailData(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var emailValidator = propertyValidators.OfType<EmailValidator>().FirstOrDefault();
             if (emailValidator != null)

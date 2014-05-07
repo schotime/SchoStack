@@ -37,7 +37,7 @@ namespace SchoStack.Web.Conventions
             });
         }
 
-        private void AddRegexData(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData request)
+        public void AddRegexData(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData request)
         {
             var regex = propertyValidators.OfType<RegularExpressionAttribute>().FirstOrDefault();
             if (regex != null)
@@ -50,7 +50,7 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private void AddEqualToDataAttr(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData request)
+        public void AddEqualToDataAttr(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData request)
         {
             var equal = propertyValidators.OfType<CompareAttribute>().FirstOrDefault();
             if (equal != null)
@@ -80,7 +80,7 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private void AddRequiredClass(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData request)
+        public void AddRequiredClass(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData request)
         {
             var required = propertyValidators.OfType<RequiredAttribute>().FirstOrDefault();
             if (required != null)
@@ -98,20 +98,17 @@ namespace SchoStack.Web.Conventions
             }
         }
 
-        private void AddLengthClasses(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData requestData)
+        public void AddLengthClasses(IEnumerable<ValidationAttribute> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
             var lengthValidator = propertyValidators.OfType<StringLengthAttribute>().FirstOrDefault();
             if (lengthValidator != null)
             {
                 htmlTag.Attr("maxlength", lengthValidator.MaximumLength);
-                if (lengthValidator.MinimumLength > 0)
-                    htmlTag.Attr("minlength", lengthValidator.MinimumLength);
 
                 if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
                 {
-                    htmlTag.Data("rule-maxlength", lengthValidator.MaximumLength);
-                    if (lengthValidator.MinimumLength > 0)
-                        htmlTag.Data("rule-minlength", lengthValidator.MinimumLength);
+                    htmlTag.Data("rule-range", "[" + lengthValidator.MinimumLength + "," + lengthValidator.MaximumLength + "]");
+                    htmlTag.Data("msg-range", lengthValidator.FormatErrorMessage(requestData.Accessor.Name));
                 }
             }
         }
