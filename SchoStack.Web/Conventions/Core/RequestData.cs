@@ -12,14 +12,30 @@ namespace SchoStack.Web.Conventions.Core
         public ViewContext ViewContext { get; set; }
         public Accessor Accessor { get; set; }
 
+        private string _id;
         public string Id
         {
-            get { return Name == null ? null : IdRegex.Replace(Name, "_"); }
+            get
+            {
+                if (_id != null)
+                    return _id;
+
+                _id = Name == null ? null : IdRegex.Replace(Name, "_");
+                return _id;
+            }
         }
 
+        private string _name;
         public string Name 
         {
-            get { return Accessor == null ? null : string.Join(".", Accessor.PropertyNames).Replace(".[", "["); }
+            get
+            {
+                if (_name != null)
+                    return _name;
+
+                _name = Accessor == null ? null : string.Join(".", Accessor.PropertyNames).Replace(".[", "[");
+                return _name;
+            }
         }
 
         public virtual Type GetPropertyType()

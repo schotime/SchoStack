@@ -7,6 +7,7 @@ namespace SchoStack.Web.Html
     public static class Loop
     {
         private static readonly object _itemsKey = new object();
+        private static HttpContextBase _context;
 
         public static IEnumerable<T> Track<T>(this IEnumerator<T> enumerator)
         {
@@ -78,12 +79,18 @@ namespace SchoStack.Web.Html
         {
             get
             {
-                return HttpContext.Current.Items[_itemsKey] as ILoopState;
+                return Context.Items[_itemsKey] as ILoopState;
             }
             set
             {
-                HttpContext.Current.Items[_itemsKey] = value;
+                Context.Items[_itemsKey] = value;
             }
+        }
+
+        public static HttpContextBase Context
+        {
+            get { return _context ?? new HttpContextWrapper(HttpContext.Current); }
+            set { _context = value; }
         }
 
         private static void End()

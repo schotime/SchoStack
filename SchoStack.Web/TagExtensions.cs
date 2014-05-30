@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
@@ -13,6 +14,13 @@ namespace SchoStack.Web.Html
 {
     public static class TagExtensions
     {
+        public static IEnumerable<LoopItem<TModel, TData>> Loop<TModel, TData>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, IEnumerable<TData>>> listExpression)
+        {
+            var enumerable = listExpression.Compile().Invoke(htmlHelper.ViewData.Model);
+            var listFunc = LoopItem<TModel, TData>.GetCurrentIndexedExpressionWithIntParam(listExpression).Compile();
+            return LoopItem<TModel, TData>.LoopItems(htmlHelper, listExpression, listFunc, enumerable);
+        }
+
         public static HtmlProfileContext Profile(this HtmlHelper helper, IHtmlProfile profile)
         {
             var existingContext = helper.ViewContext.HttpContext.Items[HtmlProfileContext.SchostackWebProfile] as HtmlProfileContext;
@@ -199,7 +207,7 @@ namespace SchoStack.Web.Html.Form
         {
             viewContext.RequestContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof (TInput);
             var tagGenerator = new TagGenerator(HtmlConventionFactory.HtmlConventions);
-            var tag = tagGenerator.GenerateTagFor(viewContext, () => new FormTag(url));
+            var tag = tagGenerator.GenerateTagFor(viewContext, () => (FormTag) new FormTag(url).NoClosingTag());
             modifier(tag);
             viewContext.Writer.WriteLine(tag);
             return new InputTypeMvcForm(viewContext);

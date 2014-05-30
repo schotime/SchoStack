@@ -33,8 +33,6 @@ namespace SchoStack.Web.Conventions
             RuleProviders.Add(AddEqualToDataAttr);
             RuleProviders.Add(AddRegexData);
             RuleProviders.Add(AddEmailData);
-            RuleProviders.Add(AddMinLengthClasses);
-            RuleProviders.Add(AddMaxLengthClasses);
 
             Inputs.Always.Modify((h, r) =>
             {
@@ -103,44 +101,11 @@ namespace SchoStack.Web.Conventions
 
         public void AddLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
-            var lengthValidator = propertyValidators.OfType<LengthValidator>().FirstOrDefault();
+            var lengthValidator = (LengthValidator) propertyValidators.FirstOrDefault(x => x.GetType() == typeof (LengthValidator)
+                                                                                           || x.GetType() == typeof (MaximumLengthValidator));
             if (lengthValidator != null)
             {
                 htmlTag.Attr("maxlength", lengthValidator.Max);
-
-                if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
-                {
-                    htmlTag.Data("rule-range", "[" + lengthValidator.Min + "," + lengthValidator.Max + "]");
-                    htmlTag.Data("msg-range", GetMessage(requestData, lengthValidator) ?? string.Empty);
-                }
-            }
-        }
-
-        public void AddMaxLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
-        {
-            var maxlengthValidator = propertyValidators.OfType<MaximumLengthValidator>().FirstOrDefault();
-            if (maxlengthValidator != null)
-            {
-                htmlTag.Attr("maxlength", maxlengthValidator.Max);
-
-                if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
-                {
-                    htmlTag.Data("rule-maxlength", maxlengthValidator.Max);
-                    htmlTag.Data("msg-maxlength", GetMessage(requestData, maxlengthValidator) ?? string.Empty);
-                }
-            }
-        }
-
-        public void AddMinLengthClasses(IEnumerable<IPropertyValidator> propertyValidators, HtmlTag htmlTag, RequestData requestData)
-        {
-            var minlengthValidator = propertyValidators.OfType<MinimumLengthValidator>().FirstOrDefault();
-            if (minlengthValidator != null)
-            {
-                if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
-                {
-                    htmlTag.Data("rule-minlength", minlengthValidator.Min);
-                    htmlTag.Data("msg-minlength", GetMessage(requestData, minlengthValidator) ?? string.Empty);
-                }
             }
         }
 

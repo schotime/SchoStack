@@ -41,8 +41,9 @@
       <HintPath>..\packages\FubuCore.1.2.0.272\lib\FubuCore.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="HtmlTags">
-      <HintPath>..\packages\HtmlTags.2.0.0.174\lib\4.0\HtmlTags.dll</HintPath>
+    <Reference Include="HtmlTags, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\HtmlTags.2.1.0.183\lib\4.0\HtmlTags.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
       <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
@@ -74,6 +75,7 @@
     <Compile Include="HtmlConventions\TestViewModel.cs" />
     <Compile Include="HtmlConventions\ValidationConventionTests.cs" />
     <Compile Include="HtmlConventions\ViewContextTestExtensions.cs" />
+    <Compile Include="HtmlLoopTests.cs" />
     <Compile Include="LessStronglyTypedConventions.cs" />
     <Compile Include="MvcMockHelpers.cs" />
     <Compile Include="NestedObjectUrlCreationTests.cs" />

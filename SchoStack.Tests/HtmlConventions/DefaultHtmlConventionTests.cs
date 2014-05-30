@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using System.Web.Routing;
+using System.Web.UI.HtmlControls;
 using FubuCore.Reflection;
+using HtmlTags;
 using NUnit.Framework;
 using Promaster.Tests;
+using SchoStack.Web;
 using SchoStack.Web.Conventions;
 using SchoStack.Web.Conventions.Core;
 using SchoStack.Web.Html;
+using SchoStack.Web.Html.UrlForm;
 using Shouldly;
 
 namespace SchoStack.Tests.HtmlConventions
@@ -353,6 +359,20 @@ namespace SchoStack.Tests.HtmlConventions
 
             tag.Text().ShouldBe("1/01/2000 12:00:00 AM +01:00");
         }
-    }
 
+        [Test, RequiresSTA]
+        public void FormTest()
+        {
+            RouteTable.Routes.Clear();
+            ActionFactory.Actions[typeof(TestInputModel)] = new ActionInfo();
+            RouteTable.Routes.Add(typeof(TestInputModel).FullName, new Route("fakeUrl", null));
+
+            var model = new TestViewModel() { CreatedAtOffset = new DateTimeOffset(2000, 1, 1, 0, 0, 0, new TimeSpan(0, 1, 0, 0)) };
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            var stringWriter = new StringWriter();
+            helper.ViewContext.Writer = stringWriter;
+            var form = helper.Form<TestInputModel>(x=>x.Method("get"));
+            Assert.AreEqual("<form method=\"get\" action=\"/fakeUrl\">\r\n", stringWriter.ToString());
+        }
+    }
 }

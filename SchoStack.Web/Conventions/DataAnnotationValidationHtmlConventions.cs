@@ -104,12 +104,6 @@ namespace SchoStack.Web.Conventions
             if (lengthValidator != null)
             {
                 htmlTag.Attr("maxlength", lengthValidator.MaximumLength);
-
-                if (!_msUnobtrusive && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
-                {
-                    htmlTag.Data("rule-range", "[" + lengthValidator.MinimumLength + "," + lengthValidator.MaximumLength + "]");
-                    htmlTag.Data("msg-range", lengthValidator.FormatErrorMessage(requestData.Accessor.Name));
-                }
             }
         }
     }
