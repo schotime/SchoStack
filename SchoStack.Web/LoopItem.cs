@@ -56,6 +56,18 @@ namespace SchoStack.Web.Html
             return _htmlHelper.Label(expression);
         }
 
+        public LiteralTag ValidationMessage(Expression<Func<T, object>> propExpression)
+        {
+            var expression = CombineExpression(propExpression);
+            return _htmlHelper.ValidationMessage(expression);
+        }
+
+        public LiteralTag ValidationMessage(Expression<Func<T, object>> propExpression, string message)
+        {
+            var expression = CombineExpression(propExpression);
+            return _htmlHelper.ValidationMessage(expression, message);
+        }
+
         private static ConcurrentDictionary<Type, object> cache = new ConcurrentDictionary<Type, object>();
 
         public IEnumerable<LoopItem<TModel, TData>> Loop<TData>(Expression<Func<T, IEnumerable<TData>>> listExpression)
