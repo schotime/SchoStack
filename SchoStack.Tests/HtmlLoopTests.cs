@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using NUnit.Framework;
 using Promaster.Tests;
@@ -110,6 +111,32 @@ namespace SchoStack.Tests
             }
             sw.Stop();
             Console.WriteLine(sw.ElapsedMilliseconds);
+        }
+
+        [Test]
+        public void Test3()
+        {
+            var model = new LoopViewModel()
+            {
+                Address = "My Address",
+                LoopItems = new List<LoopViewModel.LoopItem>()
+                {
+                    new LoopViewModel.LoopItem()
+                    {
+                        Name = "MyName"
+                    }
+                }
+            };
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+
+            Assert.AreEqual("Address", helper.IdFor(x => x.Address));
+            Assert.AreEqual("Address", helper.NameFor(x => x.Address));
+
+            foreach (var loop in helper.Loop(x => x.LoopItems))
+            {
+                Assert.AreEqual("LoopItems_0__Name", loop.IdFor(x=>x.Name));
+                Assert.AreEqual("LoopItems[0].Name", loop.NameFor(x=>x.Name));
+            }
         }
     }
 

@@ -20,22 +20,40 @@ namespace SchoStack.Web.Html
         public T Item { get; set; }
         public LoopInfo Info { get; set; }
 
-        public struct LoopInfo
+        public class LoopInfo
         {
-            public int Index;
-            public bool IsLast;
-            public bool IsFirst;
-            public bool IsEven;
-            public bool IsOdd;
+            public LoopInfo(Expression<Func<TModel, T>> currentExpression, HtmlHelper<TModel> htmlHelper, int index, bool isFirst, bool isLast, bool isEven, bool isOdd)
+            {
+                CurrentExpression = currentExpression;
+                Index = index;
+                IsFirst = isFirst;
+                IsLast = isLast;
+                IsEven = isEven;
+                IsOdd = isOdd;
+                HtmlHelper = htmlHelper;
+            }
+
+            public int Index { get; private set; }
+            public bool IsFirst { get; private set; }
+            public bool IsLast { get; private set; }
+            public bool IsEven { get; private set; }
+            public bool IsOdd { get; private set; }
+            public readonly HtmlHelper<TModel> HtmlHelper;
+            public readonly Expression<Func<TModel, T>> CurrentExpression;
+        
+            public Expression<Func<TModel, object>> TranslateExpression(Expression<Func<T, object>> expression)
+            {
+                return CurrentExpression.Combine(expression);
+            }
         }
 
-        public LoopItem(Expression<Func<TModel, T>> currentIndexedExpression, Func<TModel, int, T> listFunc, HtmlHelper<TModel> htmlHelper, T item, LoopInfo loopInfo)
+        public LoopItem(Func<TModel, int, T> listFunc, HtmlHelper<TModel> htmlHelper, T item, LoopInfo loopInfo)
         {
             Item = item;
             Info = loopInfo;
             _listFunc = listFunc;
             _htmlHelper = htmlHelper;
-            _currentIndexedExpression = currentIndexedExpression;
+            _currentIndexedExpression = loopInfo.CurrentExpression;
         }
 
         public HtmlTag Display(Expression<Func<T, object>> propExpression)
@@ -142,16 +160,14 @@ namespace SchoStack.Web.Html
                 var current = enumerator.Current;
                 next = enumerator.MoveNext();
 
-                var loopInfo = new LoopItem<TModel, TData>.LoopInfo()
-                {
-                    Index = i,
-                    IsOdd = i % 2 != 0,
-                    IsEven = i % 2 == 0,
-                    IsFirst = i == 0,
-                    IsLast = next == false
-                };
+                var loopInfo = new LoopItem<TModel, TData>.LoopInfo(indexedExp(i), htmlHelper,
+                    index: i, 
+                    isFirst: i == 0, 
+                    isLast: next == false, 
+                    isEven: i%2 == 0, 
+                    isOdd: i%2 != 0);
 
-                yield return new LoopItem<TModel, TData>(indexedExp(i), listFunc, htmlHelper, current, loopInfo);
+                yield return new LoopItem<TModel, TData>(listFunc, htmlHelper, current, loopInfo);
 
                 i++;
             }

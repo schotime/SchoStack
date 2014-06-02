@@ -96,6 +96,7 @@
     <Compile Include="FunctionalExtensions.cs" />
     <Compile Include="HandleActionBuilder.cs" />
     <Compile Include="ICommandHandler.cs" />
+    <Compile Include="IdAndNameExtensions.cs" />
     <Compile Include="IHandler.cs" />
     <Compile Include="IInvoker.cs" />
     <Compile Include="Invoker.cs" />
