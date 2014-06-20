@@ -100,7 +100,7 @@ namespace SchoStack.Web.Url
                 }
                 else if (SimpleGetter(p))
                 {
-                    GenerateDict(p.GetValue(o, null), prefix + p.Name + "=", dict);
+                    GenerateDict(p.GetValue(o, null), prefix + p.Name + ".", dict);
                 }
             }
 

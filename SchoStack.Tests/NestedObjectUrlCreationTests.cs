@@ -61,7 +61,7 @@ namespace SchoStack.Tests
             });
 
             var url = urlHelper.For<NestedQueryModel>(x => x.Age = 2, x => x.NestedObj.Name = "Wow");
-            Assert.AreEqual("/fakeUrl?Age=2&Today=7%2F12%2F2010%2012%3A00%3A00%20PM&NestedList%5B0%5D.Name=MyName&NestedObj%3DName=Wow", url);
+            Assert.AreEqual("/fakeUrl?Age=2&Today=7%2F12%2F2010%2012%3A00%3A00%20PM&NestedList%5B0%5D.Name=MyName&NestedObj.Name=Wow", url);
         }
 
         [Test, RequiresSTA]
@@ -77,7 +77,7 @@ namespace SchoStack.Tests
             httpContext.Setup(x => x.QueryString).Returns(new NameValueCollection());
 
             var url = urlHelper.For<NestedQueryModel>(x => x.MyEnum = MyEnum.Two, x => x.NestedObj.MyEnum = MyEnum.Two);
-            Assert.AreEqual("/fakeUrl?MyEnum=Two&NestedObj%3DMyEnum=Two", url);
+            Assert.AreEqual("/fakeUrl?MyEnum=Two&NestedObj.MyEnum=Two", url);
         }
     }
 
