@@ -53,17 +53,7 @@ namespace SchoStack.Tests.HtmlConventions
             tag.Attr("maxlength").ShouldBe("20");
         }
 
-        [Test]
-        public void PropertyWithStringLengthAttributeDefinedShouldHaveMinLengthAttr()
-        {
-            var model = new TestViewModel();
-            var helper = MvcMockHelpers.GetHtmlHelper(model);
-            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
-            var tag = helper.Input(x => x.Name);
-            tag.HasAttr("minlength").ShouldBe(true);
-            tag.Attr("minlength").ShouldBe("3");
-        }
-        
+       
         [Test]
         public void PropertyWithCompareAttributeDefinedShouldHaveValEqualToPassword()
         {

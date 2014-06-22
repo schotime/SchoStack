@@ -58,7 +58,7 @@ namespace SchoStack.Web.Conventions
             {
                 MessageFormatter formatter = new MessageFormatter()
                     .AppendPropertyName(request.Accessor.InnerProperty.Name.SplitPascalCase())
-                    .AppendArgument("PropertyValue", equal.MemberToCompare.Name.SplitPascalCase());
+                    .AppendArgument("ComparisonValue", equal.MemberToCompare.Name.SplitPascalCase());
                 string message = formatter.BuildMessage(equal.ErrorMessageSource.GetString());
 
                 if (_msUnobtrusive)

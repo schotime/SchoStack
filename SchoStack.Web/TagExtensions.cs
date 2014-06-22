@@ -152,7 +152,8 @@ namespace SchoStack.Web.Html.Url
         public static MvcHtmlString Action<T>(this HtmlHelper htmlHelper, T model)
         {
             var factory = ActionFactory.Actions[typeof(T)];
-            return ChildActionExtensions.Action(htmlHelper, factory.Action, factory.Controller, UrlExtensions.GenerateDict(model));
+            var url = new UrlHelper(htmlHelper.ViewContext.RequestContext);
+            return ChildActionExtensions.Action(htmlHelper, factory.Action, factory.Controller, UrlExtensions.GenerateDict(model, url));
         }
 
         public static LinkTag Link<T>(this HtmlHelper htmlHelper, T model, string text)

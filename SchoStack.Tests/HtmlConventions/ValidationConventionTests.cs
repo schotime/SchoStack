@@ -99,17 +99,6 @@ namespace SchoStack.Tests.HtmlConventions
         }
 
         [Test]
-        public void PropertyWithLengthFluentValidationDefinedShouldHaveMinLengthAttribute()
-        {
-            var model = new TestViewModel();
-            var helper = MvcMockHelpers.GetHtmlHelper(model);
-            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
-            var tag = helper.Input(x => x.Name);
-            tag.HasAttr("minlength").ShouldBe(true);
-            tag.Attr("minlength").ShouldBe(TestInputValidator.NAME_MINLENGTH.ToString());
-        }
-
-        [Test]
         public void PropertyWithCreditCardFluentValidationDefinedShouldHaveCreditCardClass()
         {
             var model = new TestViewModel();
@@ -209,10 +198,12 @@ namespace SchoStack.Tests.HtmlConventions
             Assert.AreEqual("<div>Text<input type=\"hidden\" id=\"CombinationType\" name=\"CombinationType\" value=\"Value\" /></div>", tag.ToHtmlString());
         }
 
-        [Test]
+        [Test, RequiresSTA]
         public void EnsureAllCanBeUsedWithNonExpressionBasedConventions()
         {
+            ActionFactory.Actions.Clear();
             ActionFactory.Actions.Add(typeof(TestInputModel), new ActionInfo());
+            RouteTable.Routes.Clear();
             RouteTable.Routes.Add(typeof(TestInputModel).FullName, new Route("fakeUrl", null));
 
             var model = new TestViewModel() { CreatedAt = new DateTime(2005, 03, 04) };

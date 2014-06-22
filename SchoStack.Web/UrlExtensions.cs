@@ -23,7 +23,7 @@ namespace SchoStack.Web.Url
             ActionInfo actionInfo;
             if (ActionFactory.Actions.TryGetValue(model.GetType(), out actionInfo))
             {
-                var dict = GenerateDict(model);
+                var dict = GenerateDict(model, urlHelper);
                 var url = urlHelper.RouteUrl(model.GetType().FullName, dict);
                 return url;
             }
@@ -51,7 +51,7 @@ namespace SchoStack.Web.Url
                     modifier(modelBound);
                 }
 
-                var dict = GenerateDict(modelBound);
+                var dict = GenerateDict(modelBound, urlHelper);
                 var url = urlHelper.RouteUrl(typeof(T).FullName, dict);
                 return url;
             }
@@ -66,7 +66,7 @@ namespace SchoStack.Web.Url
             }
         }
 
-        public static RouteValueDictionary GenerateDict(object o, string prefix = "", RouteValueDictionary dict = null)
+        public static RouteValueDictionary GenerateDict(object o, UrlHelper url, string prefix = "", RouteValueDictionary dict = null)
         {
             if (o == null)
                 return dict;
@@ -85,7 +85,7 @@ namespace SchoStack.Web.Url
                         continue;
 
                     if (ActionFactory.TypeFormatters.ContainsKey(p.PropertyType))
-                        val = ActionFactory.TypeFormatters[p.PropertyType](val);
+                        val = ActionFactory.TypeFormatters[p.PropertyType](val, url);
 
                     var key = ActionFactory.PropertyNameModifier(prefix + p.Name);
                     dict.Add(key, Convert.ToString(val));
@@ -95,12 +95,12 @@ namespace SchoStack.Web.Url
                     var i = 0;
                     foreach (object sub in (IEnumerable)p.GetValue(o, null) ?? new object[0])
                     {
-                        GenerateDict(sub, prefix + p.Name + "[" + (i++) + "]" + ".", dict);
+                        GenerateDict(sub, url, prefix + p.Name + "[" + (i++) + "]" + ".", dict);
                     }
                 }
                 else if (SimpleGetter(p))
                 {
-                    GenerateDict(p.GetValue(o, null), prefix + p.Name + ".", dict);
+                    GenerateDict(p.GetValue(o, null), url, prefix + p.Name + ".", dict);
                 }
             }
 
@@ -108,7 +108,7 @@ namespace SchoStack.Web.Url
             {
                 foreach (object sub in (IEnumerable)o)
                 {
-                    sb.Append(GenerateDict(sub, dict: dict));
+                    sb.Append(GenerateDict(sub, url, dict: dict));
                 }
             }
 
