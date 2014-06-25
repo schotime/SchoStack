@@ -8,6 +8,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using FubuCore.Reflection;
 
 namespace SchoStack.Web.Url
 {
@@ -37,7 +38,7 @@ namespace SchoStack.Web.Url
             if (ActionFactory.Actions.TryGetValue(model.GetType(), out actionInfo))
             {
                 var controllerContext = new ControllerContext(urlHelper.RequestContext, new AController());
-                var modelBound = (T)new DefaultModelBinder().BindModel(controllerContext, new ModelBindingContext()
+                var modelBound = (T)new AliasModelBinder().BindModel(controllerContext, new ModelBindingContext()
                 {
                     ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => (object) model, typeof (T)),
                     ModelName = null,
@@ -85,9 +86,9 @@ namespace SchoStack.Web.Url
                         continue;
 
                     if (ActionFactory.TypeFormatters.ContainsKey(p.PropertyType))
-                        val = ActionFactory.TypeFormatters[p.PropertyType](val, url);
+                        val = ActionFactory.TypeFormatters[p.PropertyType](val, url.RequestContext);
 
-                    var key = ActionFactory.PropertyNameModifier(prefix + p.Name);
+                    var key = prefix + ActionFactory.PropertyNameModifier.GetModifiedPropertyName(p);
                     dict.Add(key, Convert.ToString(val));
                 }
                 else if (IsEnumerable(p.PropertyType))
@@ -95,12 +96,12 @@ namespace SchoStack.Web.Url
                     var i = 0;
                     foreach (object sub in (IEnumerable)p.GetValue(o, null) ?? new object[0])
                     {
-                        GenerateDict(sub, url, prefix + p.Name + "[" + (i++) + "]" + ".", dict);
+                        GenerateDict(sub, url, prefix + ActionFactory.PropertyNameModifier.GetModifiedPropertyName(p) + "[" + (i++) + "]" + ".", dict);
                     }
                 }
                 else if (SimpleGetter(p))
                 {
-                    GenerateDict(p.GetValue(o, null), url, prefix + p.Name + ".", dict);
+                    GenerateDict(p.GetValue(o, null), url, prefix + ActionFactory.PropertyNameModifier.GetModifiedPropertyName(p) + ".", dict);
                 }
             }
 

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation;
+using SchoStack.Web;
 
 namespace SchoStack.Tests.HtmlConventions
 {
@@ -46,6 +47,21 @@ namespace SchoStack.Tests.HtmlConventions
         public string NameWithNumber2 { get; set; }
 
         public ArrayType[] ArrayTypes { get; set; }
+
+        [BindAlias("VA")]
+        public string Alias { get; set; }
+
+        [BindAlias("VNEST")]
+        public NestedAlias Nested { get; set; }
+
+        [BindAlias("VNLIST")]
+        public List<NestedAlias> NestedList { get; set; }
+    }
+
+    public class NestedAlias
+    {
+        [BindAlias("RLN")]
+        public string ReallyLongName { get; set; }
     }
 
     public class ArrayType
@@ -99,6 +115,15 @@ namespace SchoStack.Tests.HtmlConventions
         public string NameWithNumber2 { get; set; }
 
         public ArrayType[] ArrayTypes { get; set; }
+
+        [BindAlias("A")]
+        public string Alias { get; set; }
+
+        [BindAlias("NEST")]
+        public NestedAlias Nested { get; set; }
+
+        [BindAlias("NLIST")]
+        public List<NestedAlias> NestedList { get; set; }
     }
 
     public class TestInputValidator : AbstractValidator<TestInputModel>

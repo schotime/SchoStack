@@ -85,13 +85,7 @@ namespace SchoStack.Web.Conventions.Core
 
         public static RequestData BuildRequestData(ViewContext viewContext, Accessor accessor)
         {
-            var req = new RequestData()
-            {
-                ViewContext = viewContext,
-                Accessor = accessor,
-                InputType = viewContext.HttpContext.Items[FORMINPUTTYPE] as Type
-            };
-            return req;
+            return RequestData.BuildRequestData(viewContext, accessor);
         }
 
         public static RequestData BuildRequestData<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
@@ -103,10 +97,7 @@ namespace SchoStack.Web.Conventions.Core
         public T GenerateTagFor<T>(ViewContext viewContext, Func<T> builder) where T : HtmlTag
         {
             var profile = GetHtmlProfile(viewContext);
-            var req = new RequestData() { 
-                ViewContext = viewContext, 
-                InputType = viewContext.HttpContext.Items[FORMINPUTTYPE] as Type 
-            };
+            var req = BuildRequestData(viewContext, null);
             var tag = builder();
             ModifyTag(tag, req, profile.HtmlConventions, x => x.All);
             return tag;

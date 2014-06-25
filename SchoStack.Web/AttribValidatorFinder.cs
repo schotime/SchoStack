@@ -14,7 +14,7 @@ namespace SchoStack.Web.Html
             if (requestData.InputType == null)
                 return new List<ValidationAttribute>();
 
-            var properties = ValidatorFinderHelper.FindPropertyData(requestData);
+            var properties = InputPropertyMatcher.FindPropertyData(requestData);
 
             return properties.SelectMany(propertyInfo => propertyInfo.GetAllAttributes<ValidationAttribute>());
         }

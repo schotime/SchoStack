@@ -79,6 +79,67 @@ namespace SchoStack.Tests
             var url = urlHelper.For<NestedQueryModel>(x => x.MyEnum = MyEnum.Two, x => x.NestedObj.MyEnum = MyEnum.Two);
             Assert.AreEqual("/fakeUrl?MyEnum=Two&NestedObj.MyEnum=Two", url);
         }
+
+        [Test, RequiresSTA]
+        public void AliasBinding()
+        {
+            RouteTable.Routes.Clear();
+            ModelBinders.Binders.DefaultBinder = new AliasModelBinder();
+            ActionFactory.Actions[typeof(AliasQueryModel)] = new ActionInfo();
+            RouteTable.Routes.Add(typeof(AliasQueryModel).FullName, new Route("fakeUrl", null));
+
+            var urlHelper = MvcMockHelpers.GetUrlHelper("~/fakeUrl");
+
+            var httpContext = Mock.Get(urlHelper.RequestContext.HttpContext.Request);
+            httpContext.Setup(x => x.QueryString).Returns(new NameValueCollection());
+
+            var url = urlHelper.For(new AliasQueryModel { MyBigLongNameHere = "MyName"});
+            Assert.AreEqual("/fakeUrl?N=MyName", url);
+            ModelBinders.Binders.DefaultBinder = new DefaultModelBinder();
+        }
+
+        [Test, RequiresSTA]
+        public void AliasBindingWithModifers()
+        {
+            RouteTable.Routes.Clear();
+            ModelBinders.Binders.DefaultBinder = new AliasModelBinder();
+            ActionFactory.Actions[typeof(AliasQueryModel)] = new ActionInfo();
+            RouteTable.Routes.Add(typeof(AliasQueryModel).FullName, new Route("fakeUrl", null));
+
+            var urlHelper = MvcMockHelpers.GetUrlHelper("~/fakeUrl");
+
+            var httpContext = Mock.Get(urlHelper.RequestContext.HttpContext.Request);
+            httpContext.Setup(x => x.QueryString).Returns(new NameValueCollection()
+            {
+                { "N", "MyNameOrig" },
+                { "N2", "MyNameOrig2" },
+            });
+
+            var url = urlHelper.For<AliasQueryModel>(x => x.MyBigLongNameHere2 = "Mod");
+            Assert.AreEqual("/fakeUrl?N=MyNameOrig&N2=Mod", url);
+            ModelBinders.Binders.DefaultBinder = new DefaultModelBinder();
+        }
+
+        [Test, RequiresSTA]
+        public void NestedAliases()
+        {
+            RouteTable.Routes.Clear();
+            ModelBinders.Binders.DefaultBinder = new AliasModelBinder();
+            ActionFactory.Actions[typeof(AliasQueryModel)] = new ActionInfo();
+            RouteTable.Routes.Add(typeof(AliasQueryModel).FullName, new Route("fakeUrl", null));
+
+            var urlHelper = MvcMockHelpers.GetUrlHelper("~/fakeUrl");
+
+            var httpContext = Mock.Get(urlHelper.RequestContext.HttpContext.Request);
+            httpContext.Setup(x => x.QueryString).Returns(new NameValueCollection()
+            {
+                { "NAQ.LNP2", "Binding" }
+            });
+
+            var url = urlHelper.For<AliasQueryModel>(x => x.NestedAliasQuery.LongerNestedProp = "WowWee");
+            Assert.AreEqual("/fakeUrl?NAQ.LNP=WowWee&NAQ.LNP2=Binding", url);
+            ModelBinders.Binders.DefaultBinder = new DefaultModelBinder();
+        }
     }
 
     public class DateTimeBinder : IModelBinder
@@ -86,10 +147,33 @@ namespace SchoStack.Tests
         public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
             var value = bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
-
             var date = DateTime.Parse(value.AttemptedValue, new CultureInfo("en-AU"));
-
             return date;
+        }
+    }
+
+    public class AliasQueryModel
+    {
+        public AliasQueryModel()
+        {
+            NestedAliasQuery = new NestedAliasQueryModel();
+        }
+
+        [BindAlias("N")]
+        public string MyBigLongNameHere { get; set; }
+        [BindAlias("N2")]
+        public string MyBigLongNameHere2 { get; set; }
+
+        [BindAlias("NAQ")]
+        public NestedAliasQueryModel NestedAliasQuery { get; set; }
+
+        public class NestedAliasQueryModel
+        {
+            [BindAlias("LNP")]
+            public string LongerNestedProp { get; set; }
+
+            [BindAlias("LNP2")]
+            public string LongerNestedProp2 { get; set; }
         }
     }
 

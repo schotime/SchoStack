@@ -65,6 +65,7 @@
     <Compile Include="ActionControllers\INamingConventions.cs" />
     <Compile Include="ActionFactory.cs" />
     <Compile Include="ActionInfo.cs" />
+    <Compile Include="AliasBinding.cs" />
     <Compile Include="AttribValidatorFinder.cs" />
     <Compile Include="ChildMessaging.cs" />
     <Compile Include="Conventions\Core\ConventionPipeline.cs" />
@@ -111,7 +112,7 @@
     <Compile Include="SchoStackControllerContext.cs" />
     <Compile Include="TagExtensions.cs" />
     <Compile Include="UrlExtensions.cs" />
-    <Compile Include="ValidatorFinderHelper.cs" />
+    <Compile Include="InputPropertyMatcher.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

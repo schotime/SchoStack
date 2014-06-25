@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using FubuCore.Reflection;
@@ -8,12 +7,14 @@ using SchoStack.Web.Conventions.Core;
 
 namespace SchoStack.Web
 {
-    public class ValidatorFinderHelper
+    public class InputPropertyMatcher
     {
         public static List<PropertyInfo> FindPropertyData(RequestData r)
         {
-            var properties = new List<PropertyInfo>();
+            if (r.InputType == null)
+                return new List<PropertyInfo>();
 
+            var properties = new List<PropertyInfo>();
             if (r.Accessor is SingleProperty)
             {
                 var prop = r.InputType.GetProperty(r.Accessor.InnerProperty.Name);
@@ -28,7 +29,7 @@ namespace SchoStack.Web
                 Type type = r.InputType;
                 PropertyInfo prop = r.Accessor.InnerProperty;
 
-                foreach (IValueGetter valueGetter in chain.ValueGetters)
+                foreach (var valueGetter in chain.ValueGetters)
                 {
                     if (valueGetter.DeclaringType.IsArray)
                     {

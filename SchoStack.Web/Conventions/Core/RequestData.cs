@@ -1,4 +1,7 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using FubuCore.Reflection;
@@ -26,16 +29,54 @@ namespace SchoStack.Web.Conventions.Core
         }
 
         private string _name;
-        public string Name 
+        public string Name
         {
             get
             {
                 if (_name != null)
                     return _name;
 
-                _name = Accessor == null ? null : string.Join(".", Accessor.PropertyNames).Replace(".[", "[");
+                if (Accessor == null)
+                    return null;
+
+                _name = string.Join(".", GetPropertyNames()).Replace(".[", "[");
                 return _name;
             }
+        }
+
+        private IEnumerable<string> GetPropertyNames()
+        {
+            var getters = Accessor.Getters().ToList();
+            var aliasModelBinder = (ModelBinders.Binders.DefaultBinder as AliasModelBinder);
+
+            if (InputType != null && aliasModelBinder != null)
+            {
+                var props = InputPropertyMatcher.FindPropertyData(this);
+                var i = 0;
+                return getters.Select(x =>
+                {
+                    var getter = x as PropertyValueGetter;
+                    var prop = props[i];
+                    if (getter != null && getter.Name == prop.Name)
+                    {
+                        i++;
+                        var alias = prop.GetAttribute<BindAliasAttribute>();
+                        return alias != null ? alias.Alias : x.Name;
+                    }
+                    return x.Name;
+                });
+            }
+
+            return getters.Select(x =>
+            {
+                var getter = x as PropertyValueGetter;
+                if (getter != null && aliasModelBinder != null)
+                {
+                    var alias = getter.PropertyInfo.GetAttribute<BindAliasAttribute>();
+                    return alias != null ? alias.Alias : getter.Name;
+                }
+                return x.Name;
+            });
         }
 
         public virtual Type GetPropertyType()
@@ -52,20 +93,20 @@ namespace SchoStack.Web.Conventions.Core
 
             var val = Accessor.GetValue(ViewContext.ViewData.Model);
             if (TagConventions.IsAssignable<T>(this))
-                return (T) val;
-            
-            if (typeof (T) == typeof (string))
+                return (T)val;
+
+            if (typeof(T) == typeof(string))
             {
                 return (T)(val != null ? (object)val.ToString() : (object)string.Empty);
             }
 
             try
             {
-                return (T) Convert.ChangeType(val, typeof (T));
+                return (T)Convert.ChangeType(val, typeof(T));
             }
             catch (Exception ex)
             {
-                throw new InvalidCastException(string.Format("Cannot convert '{0}' to '{1}'", (val == null ? "null" : val.GetType().ToString()), typeof(T)) ,ex);
+                throw new InvalidCastException(string.Format("Cannot convert '{0}' to '{1}'", (val == null ? "null" : val.GetType().ToString()), typeof(T)), ex);
             }
         }
 
@@ -74,6 +115,17 @@ namespace SchoStack.Web.Conventions.Core
             return !ViewContext.ViewData.ModelState.IsValid && ViewContext.ViewData.ModelState.ContainsKey(Name)
                        ? ViewContext.ViewData.ModelState[Name].Value.AttemptedValue
                        : null;
+        }
+
+        public static RequestData BuildRequestData(ViewContext viewContext, Accessor accessor)
+        {
+            var req = new RequestData()
+            {
+                ViewContext = viewContext,
+                Accessor = accessor,
+                InputType = viewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] as Type
+            };
+            return req;
         }
     }
 

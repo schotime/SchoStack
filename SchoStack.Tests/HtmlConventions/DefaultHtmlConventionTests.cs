@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq.Expressions;
 using System.Web.Mvc;
@@ -301,6 +302,51 @@ namespace SchoStack.Tests.HtmlConventions
 
             tag.Attr("name").ShouldBe("Name");
             tag.Attr("id").ShouldBe("Name");
+        }
+
+        [Test]
+        public void NameShouldUseAliasIfExistsForProperty()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+
+            ModelBinders.Binders.DefaultBinder = new AliasModelBinder();
+
+            var tag = helper.Input(x => x.Alias);
+            tag.Attr("name").ShouldBe("A");
+
+            ModelBinders.Binders.DefaultBinder = new DefaultModelBinder();
+        }
+
+        [Test]
+        public void NameShouldUseAliasIfExistsForPropertyAndIsNested()
+        {
+            var model = new TestViewModel() {Nested = new NestedAlias() {ReallyLongName = "Really"}};
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+
+            ModelBinders.Binders.DefaultBinder = new AliasModelBinder();
+
+            var tag = helper.Input(x => x.Nested.ReallyLongName);
+            tag.Attr("name").ShouldBe("NEST.RLN");
+
+            ModelBinders.Binders.DefaultBinder = new DefaultModelBinder();
+        }
+
+        [Test]
+        public void NameShouldUseAliasIfExistsForPropertyAndIsList()
+        {
+            var model = new TestViewModel() { Nested = new NestedAlias() { ReallyLongName = "Really" } };
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+            helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
+
+            ModelBinders.Binders.DefaultBinder = new AliasModelBinder();
+
+            var tag = helper.Input(x => x.NestedList[0].ReallyLongName);
+            tag.Attr("name").ShouldBe("NLIST[0].RLN");
+
+            ModelBinders.Binders.DefaultBinder = new DefaultModelBinder();
         }
 
         [Test]

@@ -35,7 +35,7 @@ namespace SchoStack.Web.FluentValidation
             if (baseValidator == null)
                 return new List<IPropertyValidator>();
 
-            var properties = ValidatorFinderHelper.FindPropertyData(requestData);
+            var properties = InputPropertyMatcher.FindPropertyData(requestData);
             var validators = GetPropertyValidators(baseValidator, properties);
             return validators;
         }
