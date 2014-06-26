@@ -55,6 +55,9 @@ namespace SchoStack.Web.Conventions.Core
                 var i = 0;
                 return getters.Select(x =>
                 {
+                    if (i > props.Count - 1)
+                        return x.Name;
+
                     var getter = x as PropertyValueGetter;
                     var prop = props[i];
                     if (getter != null && getter.Name == prop.Name)
