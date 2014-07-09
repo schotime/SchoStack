@@ -80,6 +80,7 @@
     <Compile Include="MvcMockHelpers.cs" />
     <Compile Include="NestedObjectUrlCreationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UrlExtensionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

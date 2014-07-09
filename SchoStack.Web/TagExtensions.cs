@@ -179,7 +179,7 @@ namespace SchoStack.Web.Html.Form
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
             modifier = modifier ?? (x => { });
             var url = urlHelper.Action(htmlHelper.ViewContext.RequestContext.RouteData.GetRequiredString("action"), routesValues);
-            return GenerateForm<TInput>(htmlHelper.ViewContext, modifier, url);
+            return GenerateForm(typeof(TInput), htmlHelper.ViewContext, modifier, url);
         }
 
         public static MvcForm Form<TInput>(this HtmlHelper htmlHelper, string action, object routesValues = null, Action<FormTag> modifier = null)
@@ -187,7 +187,7 @@ namespace SchoStack.Web.Html.Form
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
             modifier = modifier ?? (x => { });
             var url = urlHelper.Action(action, routesValues);
-            return GenerateForm<TInput>(htmlHelper.ViewContext, modifier, url);
+            return GenerateForm(typeof(TInput), htmlHelper.ViewContext, modifier, url);
         }
 
         public static MvcForm Form<TInput>(this HtmlHelper htmlHelper, string action, string controller, object routesValues = null, Action<FormTag> modifier = null)
@@ -195,7 +195,7 @@ namespace SchoStack.Web.Html.Form
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
             modifier = modifier ?? (x => { });
             var url = urlHelper.Action(action, controller, routesValues);
-            return GenerateForm<TInput>(htmlHelper.ViewContext, modifier, url);
+            return GenerateForm(typeof(TInput), htmlHelper.ViewContext, modifier, url);
         }
 
         public static HtmlTag FormEnd(this HtmlHelper htmlHelper)
@@ -204,9 +204,9 @@ namespace SchoStack.Web.Html.Form
             return new LiteralTag("</form>");
         }
 
-        public static MvcForm GenerateForm<TInput>(ViewContext viewContext, Action<FormTag> modifier, string url)
+        public static MvcForm GenerateForm(Type inputType, ViewContext viewContext, Action<FormTag> modifier, string url)
         {
-            viewContext.RequestContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof (TInput);
+            viewContext.RequestContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = inputType;
             var tagGenerator = new TagGenerator(HtmlConventionFactory.HtmlConventions);
             var tag = tagGenerator.GenerateTagFor(viewContext, () => (FormTag) new FormTag(url).NoClosingTag());
             modifier(tag);
@@ -239,7 +239,7 @@ namespace SchoStack.Web.Html.UrlForm
         {
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
             var url = urlHelper.For(model);
-            return Html.Form.TagExtensions.GenerateForm<TInput>(htmlHelper.ViewContext, modifier, url);
+            return Html.Form.TagExtensions.GenerateForm(model.GetType(), htmlHelper.ViewContext, modifier, url);
         }
         
         public static HtmlTag FormEnd(this HtmlHelper htmlHelper)

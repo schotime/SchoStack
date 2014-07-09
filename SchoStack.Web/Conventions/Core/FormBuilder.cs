@@ -43,12 +43,12 @@ namespace SchoStack.Web.Conventions.Core
         public MvcForm For<TInput>(TInput model, Action<FormTag> modifier)
         {
             var url = _webViewPage.Url.For(model);
-            return GenerateForm<TInput>(modifier, url);
+            return GenerateForm(model.GetType(), modifier, url);
         }
 
-        private MvcForm GenerateForm<TInput>(Action<FormTag> modifier, string url)
+        private MvcForm GenerateForm(Type modelType, Action<FormTag> modifier, string url)
         {
-            _webViewPage.Context.Items[TagGenerator.FORMINPUTTYPE] = typeof (TInput);
+            _webViewPage.Context.Items[TagGenerator.FORMINPUTTYPE] = modelType;
             var tagGenerator = new TagGenerator(HtmlConventionFactory.HtmlConventions);
             var tag = tagGenerator.GenerateTagFor(_webViewPage.ViewContext, () => new FormTag(url));
             modifier(tag);
