@@ -79,7 +79,7 @@ namespace SchoStack.Web.Url
 
             foreach (PropertyInfo p in t.GetProperties())
             {
-                if (p.PropertyType.IsEnum || IsConvertible(p.PropertyType))
+                if (IsEnum(p.PropertyType) || IsConvertible(p.PropertyType))
                 {
                     var val = p.GetValue(o, null);
                     if (val == null || Equals(val, GetDefault(p.PropertyType)))
@@ -89,7 +89,7 @@ namespace SchoStack.Web.Url
                         val = ActionFactory.TypeFormatters[p.PropertyType](val, url.RequestContext);
 
                     var key = prefix + ActionFactory.PropertyNameModifier.GetModifiedPropertyName(p);
-                    dict.Add(key, Convert.ToString(val));
+                    dict.Add(key, val);
                 }
                 else if (IsEnumerable(p.PropertyType))
                 {
@@ -116,12 +116,20 @@ namespace SchoStack.Web.Url
             return dict;
         }
 
-        internal static Type[] ConvertibleTypes =
+        private static bool IsEnum(Type t)
+        {
+            if (t.IsEnum)
+                return true;
+            var nullableType = Nullable.GetUnderlyingType(t);
+            return nullableType != null && nullableType.IsEnum;
+        }
+
+        public static List<Type> ConvertibleTypes = new List<Type>
         {
             typeof (bool), typeof (byte), typeof (char),
-            typeof (DateTime), typeof (decimal), typeof (double), typeof (float), typeof (int),
+            typeof (DateTime), typeof(DateTimeOffset), typeof (decimal), typeof (double), typeof (float), typeof (int),
             typeof (long), typeof (sbyte), typeof (short), typeof (string), typeof (uint),
-            typeof (ulong), typeof (ushort)
+            typeof (ulong), typeof (ushort), typeof(Guid), typeof(TimeSpan)
         };
 
         /// <summary>
@@ -129,7 +137,7 @@ namespace SchoStack.Web.Url
         /// </summary>
         /// <param name="type">This type.</param>
         /// <param name="types">The Types to compare this Type to.</param>
-        public static bool In(Type type, params Type[] types)
+        public static bool In(Type type, IEnumerable<Type> types)
         {
             foreach (Type t in types)
             {

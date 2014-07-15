@@ -75,6 +75,7 @@
     <Compile Include="Conventions\DataAnnotationHtmlConventions.cs" />
     <Compile Include="Conventions\DataAnnotationValidationHtmlConventions.cs" />
     <Compile Include="Conventions\DefaultHtmlConventions.cs" />
+    <Compile Include="Conventions\DefaultSelectListBuilder.cs" />
     <Compile Include="CookieTempDataProvider.cs" />
     <Compile Include="Extensions\MoreStringExtensions.cs" />
     <Compile Include="Extensions\SelectListHelpers.cs" />

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Web.Mvc;
-using FubuCore;
 using HtmlTags;
 using SchoStack.Web.Conventions.Core;
 using SchoStack.Web.Extensions;
@@ -58,24 +56,7 @@ namespace SchoStack.Web.Conventions
 
         private static HtmlTag BuildSelectList(RequestData req)
         {
-            var list = req.GetValue<IEnumerable<SelectListItem>>();
-            if (list == null)
-                return null;
-
-            var attemptedVal = req.GetAttemptedValue();
-            var multiple = attemptedVal != null ? attemptedVal.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries).Select(x=>x.Trim()) : null;
-            var drop = new SelectTag();
-            if (list is MultiSelectList)
-            {
-                drop.Attr("multiple", "multiple");
-                list = list.As<MultiSelectList>().Items.As<IEnumerable<SelectListItem>>();
-            }
-            foreach (var item in list)
-            {
-                bool selected = attemptedVal != null ? multiple.Contains(item.Value ?? item.Text) : item.Selected;
-                drop.Add("option").Attr("value", item.Value).Attr("selected", selected ? "selected" : null).Text(item.Text);
-            }
-            return drop;
+            return new DefaultSelectListBuilder<SelectListItem>().Build(req);
         }
     }
 }

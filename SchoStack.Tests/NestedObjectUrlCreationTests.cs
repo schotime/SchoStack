@@ -49,6 +49,8 @@ namespace SchoStack.Tests
             ModelBinders.Binders.Remove(typeof (DateTime?));
             ModelBinders.Binders.Add(typeof(DateTime?), new DateTimeBinder());
 
+            ActionFactory.TypeFormatters[typeof (DateTime?)] = (o, context) => ((DateTime?) o).Value.ToString("dd/MM/yyyy HH:mm:ss");
+
             var urlHelper = MvcMockHelpers.GetUrlHelper("~/fakeUrl");
 
             var httpContext = Mock.Get(urlHelper.RequestContext.HttpContext.Request);
@@ -57,11 +59,11 @@ namespace SchoStack.Tests
                 { "Age", "1" },
                 { "NestedList[0].Name", "MyName" },
                 { "NestedObj.Name", "MyName2" },
-                { "Today", "7/12/2010 12:00:00" }
+                { "Today", "17/10/2010 12:00:00" }
             });
 
             var url = urlHelper.For<NestedQueryModel>(x => x.Age = 2, x => x.NestedObj.Name = "Wow");
-            Assert.AreEqual("/fakeUrl?Age=2&Today=7%2F12%2F2010%2012%3A00%3A00%20PM&NestedList%5B0%5D.Name=MyName&NestedObj.Name=Wow", url);
+            Assert.AreEqual("/fakeUrl?Age=2&Today=17%2F10%2F2010%2012%3A00%3A00&NestedList%5B0%5D.Name=MyName&NestedObj.Name=Wow", url);
         }
 
         [Test, RequiresSTA]

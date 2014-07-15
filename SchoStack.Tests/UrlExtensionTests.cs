@@ -9,6 +9,8 @@ using Promaster.Tests;
 using SchoStack.Web;
 using SchoStack.Web.Conventions.Core;
 using SchoStack.Web.Html.UrlForm;
+using SchoStack.Web.Url;
+using Shouldly;
 
 namespace SchoStack.Tests
 {
@@ -42,6 +44,26 @@ namespace SchoStack.Tests
 
         public interface ITestUrl
         {
+        }
+    }
+
+    public class UrlExtensionTestsForGuid
+    {
+        [Test]
+        public void UrlForInterfaceShouldReturnCorrectUrl()
+        {
+            ActionFactory.Actions.Add(typeof(TestUrl), new ActionInfo() { });
+            RouteTable.Routes.Add(typeof(TestUrl).FullName, new Route("fakeUrl/{Id}", null));
+
+            var url = MvcMockHelpers.GetUrlHelper("~/fakeUrl");
+
+            var newGuid = Guid.NewGuid();
+            url.For(new TestUrl() { Id = newGuid }).ShouldBe("/fakeUrl/" + newGuid);
+        }
+
+        public class TestUrl 
+        {
+            public Guid Id { get; set; }
         }
     }
 }

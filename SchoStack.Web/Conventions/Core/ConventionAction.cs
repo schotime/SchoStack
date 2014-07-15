@@ -22,6 +22,11 @@ namespace SchoStack.Web.Conventions.Core
             Builders.Add(new Builder(Condition, builder));
         }
 
+        public void BuildBy(IHtmlBuilder builder)
+        {
+            BuildBy(builder.Build);
+        }
+
         public void BuildBy(Func<RequestData, IConventionPipeline, HtmlTag> builder)
         {
             Builders.Add(new Builder(Condition, builder));
