@@ -73,8 +73,8 @@ namespace SchoStack.Web.Html
 
         public static LiteralTag ValidationMessage<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string message)
         {
-            var req = new RequestData() { Accessor = ReflectionHelper.GetAccessor(expression) };
-            var val = ValidationExtensions.ValidationMessage(htmlHelper, req.Name, message);
+            var reqName = RequestData.GetName(ReflectionHelper.GetAccessor(expression));
+            var val = ValidationExtensions.ValidationMessage(htmlHelper, reqName, message);
             if (val != null)
                 return new LiteralTag(val.ToHtmlString());
             return new LiteralTag("");

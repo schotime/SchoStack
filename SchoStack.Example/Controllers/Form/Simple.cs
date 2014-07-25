@@ -21,7 +21,11 @@ namespace SchoStack.Example.Controllers.Form
                          Multi = new MultiSelectList(new List<SelectListItem>() { 
                              new SelectListItem(){ Text = "One", Value = "1"},
                              new SelectListItem(){ Text = "Two", Value = "2"},
-                         }, new[] { "1" })
+                         }, new[] { "1" }), 
+                         Nested =  new FormSimpleName()
+                         {
+                             Name = "Test"
+                         }
                      };
             return View(vm);
         }
@@ -44,11 +48,25 @@ namespace SchoStack.Example.Controllers.Form
         public string Password { get; set; }
 
         public MultiSelectList Multi { get; set; }
+
+        public DateTime? DateTime { get; set; }
+
+        public FormSimpleName Nested { get; set; }
     }
+
+    public class FormSimpleName
+    {
+        public string Name { get; set; }
+    }
+
     public class FormSimpleInputModel
     {
         public string Email { get; set; }
         public string Password { get; set; }
+
+        public DateTime? DateTime { get; set; }
+
+        public FormSimpleName Nested { get; set; }
     }
 
     public class FormSimpleValidator : AbstractValidator<FormSimpleInputModel>
@@ -59,6 +77,9 @@ namespace SchoStack.Example.Controllers.Form
                 .NotEmpty();
 
             RuleFor(x => x.Password)
+                .NotEmpty();
+
+            RuleFor(x => x.Nested.Name)
                 .NotEmpty();
         }
     }

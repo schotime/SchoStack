@@ -50,7 +50,7 @@ namespace SchoStack.Web.Conventions.Core
         {
             _webViewPage.Context.Items[TagGenerator.FORMINPUTTYPE] = modelType;
             var tagGenerator = new TagGenerator(HtmlConventionFactory.HtmlConventions);
-            var tag = tagGenerator.GenerateTagFor(_webViewPage.ViewContext, () => new FormTag(url));
+            var tag = tagGenerator.GenerateTagFor(_webViewPage.ViewContext, () => (FormTag)new FormTag(url).NoClosingTag());
             modifier(tag);
             _webViewPage.ViewContext.Writer.WriteLine(tag);
             return new InputTypeMvcForm(_webViewPage.ViewContext);

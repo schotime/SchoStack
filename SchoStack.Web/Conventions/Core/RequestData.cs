@@ -10,6 +10,8 @@ namespace SchoStack.Web.Conventions.Core
 {
     public class RequestData
     {
+        protected RequestData() {}
+
         private static readonly Regex IdRegex = new Regex(@"[\.\[\]]", RegexOptions.Compiled);
 
         public ViewContext ViewContext { get; set; }
@@ -116,8 +118,14 @@ namespace SchoStack.Web.Conventions.Core
         public string GetAttemptedValue()
         {
             return !ViewContext.ViewData.ModelState.IsValid && ViewContext.ViewData.ModelState.ContainsKey(Name)
-                       ? ViewContext.ViewData.ModelState[Name].Value.AttemptedValue
-                       : null;
+                ? (ViewContext.ViewData.ModelState[Name].Value != null ? ViewContext.ViewData.ModelState[Name].Value.AttemptedValue : null)
+                : null;
+        }
+
+        public static string GetName(Accessor accessor)
+        {
+            var requestData = new RequestData() {Accessor = accessor};
+            return requestData.Name;
         }
 
         public static RequestData BuildRequestData(ViewContext viewContext, Accessor accessor)

@@ -11,18 +11,28 @@
 <div>
     @Html.ValidationSummary()
 
-    @using (Form.For<FormSimpleInputModel>())
+    @using (Html.Form<FormSimpleInputModel>())
     {
         <div>
             @Html.Label(x => x.Email)
             @Html.Input(x => x.Email)
+            @Html.ValidationMessage(x=>x.Email)
         </div>
         <div>
             @Html.Label(x => x.Password)
             @Html.Input(x => x.Password)
+            @Html.ValidationMessage(x=>x.Password)
         </div>
         <div>
             @Html.Input(x=>x.Multi)
+        </div>
+        <div>
+            @Html.Label(x => x.Nested.Name)
+            @Html.Input(x => x.Nested.Name)
+            @Html.ValidationMessage(x=>x.Nested.Name)
+        </div>
+        <div>
+            @Html.Input(x => x.DateTime)
         </div>
         @Html.Submit("Submit")
     }
