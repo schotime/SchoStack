@@ -7,7 +7,7 @@ namespace SchoStack.Web
     /// <summary>
     /// Represents a URL route
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class RouteAttribute : Attribute
     {
         private string name;
@@ -27,7 +27,7 @@ namespace SchoStack.Web
             {
                 if (String.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentException("value", "Must not be null");
+                    throw new ArgumentException("value", "Name must not be null");
                 }
 
                 name = value;
@@ -47,7 +47,7 @@ namespace SchoStack.Web
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("value", "Must not be null");
+                    throw new ArgumentNullException("value", "Url must not be null");
                 }
 
                 url = value;
@@ -77,7 +77,7 @@ namespace SchoStack.Web
             {
                 if (value < -1)
                 {
-                    throw new ArgumentOutOfRangeException("value", "Must be greater than -1");
+                    throw new ArgumentOutOfRangeException("value", "Order must be greater than -1");
                 }
 
                 order = value;

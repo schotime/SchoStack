@@ -128,13 +128,13 @@ namespace SchoStack.Web.Conventions.Core
             return requestData.Name;
         }
 
-        public static RequestData BuildRequestData(ViewContext viewContext, Accessor accessor)
+        public static RequestData BuildRequestData(ViewContext viewContext, Accessor accessor, Type inputType = null)
         {
             var req = new RequestData()
             {
                 ViewContext = viewContext,
                 Accessor = accessor,
-                InputType = viewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] as Type
+                InputType = inputType ?? (viewContext != null ? viewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] : null) as Type
             };
             return req;
         }

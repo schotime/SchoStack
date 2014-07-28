@@ -174,6 +174,15 @@ namespace SchoStack.Web.Html.Form
 {
     public static class TagExtensions
     {
+        public static MvcForm Form(this HtmlHelper htmlHelper, string action, string controller, object routesValues = null, Action<FormTag> modifier = null)
+        {
+            action = action ?? htmlHelper.ViewContext.RequestContext.RouteData.GetRequiredString("action");
+            var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
+            modifier = modifier ?? (x => { });
+            var url = urlHelper.Action(action, controller, routesValues);
+            return GenerateForm(null, htmlHelper.ViewContext, modifier, url);
+        }
+
         public static MvcForm Form<TInput>(this HtmlHelper htmlHelper, object routesValues = null, Action<FormTag> modifier = null)
         {
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
