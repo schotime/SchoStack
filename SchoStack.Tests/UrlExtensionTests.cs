@@ -47,7 +47,7 @@ namespace SchoStack.Tests
         }
     }
 
-    public class UrlExtensionTestsForGuid
+    public class UrlExtensionTestsForTypes
     {
         [Test]
         public void UrlForInterfaceShouldReturnCorrectUrl()
@@ -61,9 +61,22 @@ namespace SchoStack.Tests
             url.For(new TestUrl() { Id = newGuid }).ShouldBe("/fakeUrl/" + newGuid);
         }
 
+        [Test]
+        public void UrlForInterfaceShouldReturnCorrectUrl1()
+        {
+            ActionFactory.Actions.Add(typeof(TestUrl), new ActionInfo() { });
+            RouteTable.Routes.Add(typeof(TestUrl).FullName, new Route("fakeUrl/{Age}/edit", null));
+
+            var url = MvcMockHelpers.GetUrlHelper("~/fakeUrl");
+            url.For(new TestUrl()).ShouldBe("/fakeUrl/0/edit");
+        }
+
         public class TestUrl 
         {
             public Guid Id { get; set; }
+            
+            [RouteParam]
+            public int Age { get; set; }
         }
     }
 }

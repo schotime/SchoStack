@@ -111,6 +111,7 @@
     <Compile Include="Reflection\ReflectionUtil.cs" />
     <Compile Include="RouteAttribute.cs" />
     <Compile Include="RouteExtensions.cs" />
+    <Compile Include="RouteParamAttribute.cs" />
     <Compile Include="SchoStackControllerContext.cs" />
     <Compile Include="TagExtensions.cs" />
     <Compile Include="UrlExtensions.cs" />

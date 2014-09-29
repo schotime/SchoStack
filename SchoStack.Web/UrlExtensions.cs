@@ -82,8 +82,11 @@ namespace SchoStack.Web.Url
                 if (IsEnum(p.PropertyType) || IsConvertible(p.PropertyType))
                 {
                     var val = p.GetValue(o, null);
-                    if (val == null || Equals(val, GetDefault(p.PropertyType)))
+                    if (val == null || (p.GetCustomAttributes(typeof (RouteParamAttribute), true).Any() == false &&
+                                        Equals(val, GetDefault(p.PropertyType))))
+                    {
                         continue;
+                    }
 
                     if (ActionFactory.TypeFormatters.ContainsKey(p.PropertyType))
                         val = ActionFactory.TypeFormatters[p.PropertyType](val, url.RequestContext);
