@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using SchoStack.Web.ActionControllers;
 using SchoStack.Web.Url;
 
@@ -39,6 +40,20 @@ namespace SchoStack.Web
         public RedirectToRouteResult RedirectToGet()
         {
             return RedirectToAction(NamingConventions.BuildActionFromType(GetType()), NamingConventions.BuildControllerFromType(GetType()));
+        }
+
+        public ActionResult GetActionResult<T>(T input, Func<HandleActionBuilder<T>, IReturnActionResult> action)
+        {
+            var builder1 = new HandleActionBuilder<T>(input, Invoker);
+            var result = action(builder1);
+            return result.Result()(ControllerContext);
+        }
+
+        public ActionResult GetActionResult(Func<HandleActionBuilder, IReturnActionResult> action)
+        {
+            var builder1 = new HandleActionBuilder(Invoker);
+            var result = action(builder1);
+            return result.Result()(ControllerContext);
         }
         
         public IInvoker Invoker { get; set; }

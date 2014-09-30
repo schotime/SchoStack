@@ -46,7 +46,7 @@ namespace SchoStack.Web
         }
     }
 
-    public class HandleActionBuilder<T>
+    public class HandleActionBuilder<T> : IReturnActionResult
     {
         private readonly T _inputModel;
         private readonly IInvoker _invoker;
@@ -88,12 +88,17 @@ namespace SchoStack.Web
             return this;
         }
 
+        Func<ControllerContext, ActionResult> IReturnActionResult.Result()
+        {
+            return x => new HandleActionResult(this).ExecuteResult(new SchoStackControllerContext(x));
+        }
+
         public static implicit operator HandleActionResult(HandleActionBuilder<T> obj)
         {
             return new HandleActionResult(obj);
         }
 
-        public class HandleActionResult : ActionResult
+        public class HandleActionResult : ActionResult, IExecuteResult
         {
             private readonly HandleActionBuilder<T> _builder;
 
@@ -130,7 +135,7 @@ namespace SchoStack.Web
         }
     }
     
-    public class HandleActionBuilder<T, TRet>
+    public class HandleActionBuilder<T, TRet> : IReturnActionResult
     {
         private readonly T _inputModel;
         private readonly IInvoker _invoker;
@@ -195,7 +200,12 @@ namespace SchoStack.Web
             return new HandleActionResult(obj);
         }
 
-        public class HandleActionResult : ActionResult
+        Func<ControllerContext, ActionResult> IReturnActionResult.Result()
+        {
+            return x => new HandleActionResult(this).ExecuteResult(new SchoStackControllerContext(x));
+        }
+
+        public class HandleActionResult : ActionResult, IExecuteResult
         {
             private readonly HandleActionBuilder<T, TRet> _builder;
 
@@ -234,6 +244,16 @@ namespace SchoStack.Web
                 return null;
             }
         }
+    }
+
+    public interface IReturnActionResult
+    {
+        Func<ControllerContext, ActionResult> Result();
+    }
+
+    public interface IExecuteResult
+    {
+        ActionResult ExecuteResult(IControllerContext context);
     }
 
     public class ConditionResult<TRet>

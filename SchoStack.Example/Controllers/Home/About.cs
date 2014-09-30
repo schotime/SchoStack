@@ -8,6 +8,11 @@ namespace SchoStack.Example.Controllers.Home
     {
         public ActionResult Get(HomeAboutQueryModel query)
         {
+            var result = GetActionResult(z => z
+                .OnSuccess(x => View())
+                .Returning<TagBuilder>()
+            );
+
             return View();
         }
     }
