@@ -5,7 +5,7 @@ using SchoStack.Web.Url;
 
 namespace SchoStack.Web
 {
-    public class ActionController : Controller, IHaveNamingConventions
+    public abstract class ActionController : Controller, IHaveNamingConventions
     {
         protected override void ExecuteCore()
         {
