@@ -11,7 +11,8 @@ namespace SchoStack.Web
         public FeatureCsRazorViewEngine(string baseFolder)
         {
             var location = "~/%base%/{1}/{0}.cshtml".Replace("%base%", baseFolder);
-            var featureLocation = new List<string> {location};
+            var shared = "~/%base%/shared/{0}.cshtml".Replace("%base%", baseFolder);
+            var featureLocation = new List<string> { location,shared };
             featureLocation.AddRange(ViewLocationFormats);
             ViewLocationFormats = featureLocation.Where(x => x.EndsWith(".cshtml")).ToArray();
 
