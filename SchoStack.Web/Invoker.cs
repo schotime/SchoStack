@@ -34,7 +34,7 @@ namespace SchoStack.Web
             //}
             EnsureHandlerFound(thandler, type);
             var methodName = GetMethodName(x => x.Handle(null));
-            var method = thandler.GetType().GetMethod(methodName);
+            var method = type.GetMethod(methodName);
             return (TOutput) method.Invoke(thandler, new[] {inputModel});
         }
 
@@ -53,7 +53,7 @@ namespace SchoStack.Web
             var thandler = _resolver(type);
             EnsureHandlerFound(thandler, type);
             var methodName = GetMethodName(x => x.Handle(null));
-            var method = thandler.GetType().GetMethod(methodName);
+            var method = type.GetMethod(methodName);
             method.Invoke(thandler, new[] { inputModel });
         }
 
