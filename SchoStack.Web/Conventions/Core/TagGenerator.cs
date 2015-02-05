@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Web.Mvc;
 using FubuCore.Reflection;
 using HtmlTags;
+using SchoStack.Web.Reflection;
 
 namespace SchoStack.Web.Conventions.Core
 {
@@ -32,7 +33,7 @@ namespace SchoStack.Web.Conventions.Core
             return profileContext.HtmlProfile;
         }
 
-        public HtmlTag GenerateInputFor<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        public HtmlTag GenerateInputFor<TModel>(ViewContext viewContext, Expression<Func<TModel, object>> expression)
         {
             var tag = GenerateTag(viewContext, expression, x => x.Inputs);
             return tag;
@@ -44,7 +45,7 @@ namespace SchoStack.Web.Conventions.Core
             return tag;
         }
 
-        public HtmlTag GenerateDisplayFor<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        public HtmlTag GenerateDisplayFor<TModel>(ViewContext viewContext, Expression<Func<TModel, object>> expression)
         {
             var tag = GenerateTag(viewContext, expression, x => x.Displays);
             return tag;
@@ -56,7 +57,7 @@ namespace SchoStack.Web.Conventions.Core
             return tag;
         }
 
-        public HtmlTag GenerateLabelFor<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        public HtmlTag GenerateLabelFor<TModel>(ViewContext viewContext, Expression<Func<TModel, object>> expression)
         {
             var tag = GenerateTag(viewContext, expression, x => x.Labels);
             return tag;
@@ -68,9 +69,9 @@ namespace SchoStack.Web.Conventions.Core
             return tag;
         }
 
-        private HtmlTag GenerateTag<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression, Func<HtmlConvention, ITagConventions> getTagConvention)
+        private HtmlTag GenerateTag<TModel>(ViewContext viewContext, Expression<Func<TModel, object>> expression, Func<HtmlConvention, ITagConventions> getTagConvention)
         {
-            var accessor = ReflectionHelper.GetAccessor(expression);
+            var accessor = ReflectionUtil.GetAccessor(expression);
             return GenerateTag(viewContext, accessor, getTagConvention);
         }
 
@@ -88,9 +89,9 @@ namespace SchoStack.Web.Conventions.Core
             return RequestData.BuildRequestData(viewContext, accessor);
         }
 
-        public static RequestData BuildRequestData<TModel, TProperty>(ViewContext viewContext, Expression<Func<TModel, TProperty>> expression)
+        public static RequestData BuildRequestData<TModel>(ViewContext viewContext, Expression<Func<TModel, object>> expression)
         {
-            var accessor = ReflectionHelper.GetAccessor(expression);
+            var accessor = ReflectionUtil.GetAccessor(expression);
             return BuildRequestData(viewContext, accessor);
         }
 

@@ -29,19 +29,19 @@ namespace SchoStack.Web.Html
             return htmlProfileContext;
         }
 
-        public static HtmlTag Input<TModel, TProperty>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression)
+        public static HtmlTag Input<TModel>(this HtmlHelper<TModel> helper, Expression<Func<TModel, object>> expression)
         {
             var tag = new TagGenerator(HtmlConventionFactory.HtmlConventions);
             return tag.GenerateInputFor(helper.ViewContext, expression);
         }
 
-        public static HtmlTag Display<TModel, TProperty>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression)
+        public static HtmlTag Display<TModel>(this HtmlHelper<TModel> helper, Expression<Func<TModel, object>> expression)
         {
             var tag = new TagGenerator(HtmlConventionFactory.HtmlConventions);
             return tag.GenerateDisplayFor(helper.ViewContext, expression);
         }
 
-        public static HtmlTag Label<TModel, TProperty>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TProperty>> expression)
+        public static HtmlTag Label<TModel>(this HtmlHelper<TModel> helper, Expression<Func<TModel, object>> expression)
         {
             var tag = new TagGenerator(HtmlConventionFactory.HtmlConventions);
             return tag.GenerateLabelFor(helper.ViewContext, expression);

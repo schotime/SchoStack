@@ -44,7 +44,7 @@ namespace SchoStack.Tests.HtmlConventions
         public void LabelOfPropertyShouldByDefaultUseSpanTag()
         {
             var model = new TestViewModel();
-            Expression<Func<TestViewModel, string>> expression = x => x.Name;
+            Expression<Func<TestViewModel, object>> expression = x => x.Name;
             var tag = MvcMockHelpers.GetHtmlHelper(model).Label(expression);
             var name = expression.GetMemberExpression(false).Member.Name;
             tag.TagName().ShouldBe("label");
@@ -90,7 +90,7 @@ namespace SchoStack.Tests.HtmlConventions
         [Test]
         public void InputOfBoolPropertyWhosValueIsTrueShouldGiveAttrValueOfTrue()
         {
-            var model = new TestViewModel() {IsCorrect = true};
+            var model = new TestViewModel() { IsCorrect = true };
             var helper = MvcMockHelpers.GetHtmlHelper(model);
             var tag = helper.Input(x => x.IsCorrect);
             tag.Attr("value").ShouldBe(true.ToString());
@@ -322,7 +322,7 @@ namespace SchoStack.Tests.HtmlConventions
         [Test]
         public void NameShouldUseAliasIfExistsForPropertyAndIsNested()
         {
-            var model = new TestViewModel() {Nested = new NestedAlias() {ReallyLongName = "Really"}};
+            var model = new TestViewModel() { Nested = new NestedAlias() { ReallyLongName = "Really" } };
             var helper = MvcMockHelpers.GetHtmlHelper(model);
             helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
 
@@ -361,6 +361,43 @@ namespace SchoStack.Tests.HtmlConventions
         }
 
         [Test]
+        public void AllDisplaysShouldHaveIdWithDisplaySuffixEvenIfArray()
+        {
+            var model = new TestViewModel()
+            {
+                DateTimeArray = new[] { new DateTime(2015, 05, 20), DateTime.Now }
+            };
+
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+
+            using (helper.Profile(new ArrayConvProfile()))
+            {
+                var tag = helper.Display(x => x.DateTimeArray[0]);
+                tag.Text().ShouldBe("15-05-20");
+            }
+        }
+
+        public class ArrayConvProfile : HtmlProfile
+        {
+            public ArrayConvProfile()
+            {
+                HtmlConventions.Add(new TestConvention1());
+            }
+
+            public class TestConvention1 : HtmlConvention
+            {
+                public TestConvention1()
+                {
+                    Displays.If<DateTime>().Modify((tag, data) =>
+                    {
+                        var val = data.GetValue<DateTime>();
+                        tag.Text(val.ToString("yy-MM-dd"));
+                    });
+                }
+            }
+        }
+
+        [Test]
         public void AllDisplaysShouldHaveIdWithDisplaySuffix()
         {
             var model = new TestViewModel();
@@ -377,7 +414,7 @@ namespace SchoStack.Tests.HtmlConventions
             var model = new TestViewModel();
             var helper = MvcMockHelpers.GetHtmlHelper(model);
 
-            Expression<Func<TestViewModel, string>> expression = x => x.DisplayName;
+            Expression<Func<TestViewModel, object>> expression = x => x.DisplayName;
             var tag = helper.Label(expression);
 
             var attribute = expression.GetMemberExpression(false).Member.GetAttribute<DisplayNameAttribute>();
@@ -417,7 +454,7 @@ namespace SchoStack.Tests.HtmlConventions
             var helper = MvcMockHelpers.GetHtmlHelper(model);
             var stringWriter = new StringWriter();
             helper.ViewContext.Writer = stringWriter;
-            var form = helper.Form<TestInputModel>(x=>x.Method("get"));
+            var form = helper.Form<TestInputModel>(x => x.Method("get"));
             Assert.AreEqual("<form method=\"get\" action=\"/fakeUrl\">\r\n", stringWriter.ToString());
         }
     }

@@ -59,7 +59,7 @@ namespace SchoStack.Tests.HtmlConventions
         public void PropertyWithStringLengthAttributeShouldAddAMaxLengthAttributeSetToValueSpecified()
         {
             var model = new TestViewModel();
-            Expression<Func<TestViewModel, string>> expression = x => x.Name;
+            Expression<Func<TestViewModel, object>> expression = x => x.Name;
             var tag = MvcMockHelpers.GetHtmlHelper(model).Input(expression);
             var max = model.GetType().GetProperty(expression.GetMemberExpression(false).Member.Name).GetAttribute<StringLengthAttribute>().MaximumLength;
             tag.TagName().ShouldBe("input");

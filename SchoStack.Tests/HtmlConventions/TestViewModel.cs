@@ -47,6 +47,7 @@ namespace SchoStack.Tests.HtmlConventions
         public string NameWithNumber2 { get; set; }
 
         public ArrayType[] ArrayTypes { get; set; }
+        public DateTime[] DateTimeArray { get; set; }
 
         [BindAlias("VA")]
         public string Alias { get; set; }
