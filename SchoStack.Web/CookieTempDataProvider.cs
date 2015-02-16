@@ -39,6 +39,8 @@ namespace SchoStack.Web
 
                 cookie.Expires = DateTime.Now.AddDays(-30);
                 cookie.Value = string.Empty;
+                cookie.Path = controllerContext.HttpContext.Request.ApplicationPath;
+                cookie.Secure = controllerContext.HttpContext.Request.IsSecureConnection;
 
                 if (_httpContext.Response != null && _httpContext.Response.Cookies != null)
                 {
@@ -55,8 +57,12 @@ namespace SchoStack.Web
         {
             if (!values.Any())
             {
-                var cookied = new HttpCookie(TempDataCookieKey);
-                cookied.Expires = DateTime.Now.AddDays(-30);
+                var cookied = new HttpCookie(TempDataCookieKey)
+                {
+                    Expires = DateTime.Now.AddDays(-30),
+                    Path = controllerContext.HttpContext.Request.ApplicationPath,
+                    Secure = controllerContext.HttpContext.Request.IsSecureConnection
+                };
                 _httpContext.Response.Cookies.Add(cookied);
                 return;
             }
