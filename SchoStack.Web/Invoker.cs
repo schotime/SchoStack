@@ -1,5 +1,4 @@
 using System;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 
 namespace SchoStack.Web
@@ -13,32 +12,19 @@ namespace SchoStack.Web
             _resolver = resolver;
         }
 
-        //public bool LookForBaseType = false;
-
         public TOutput Execute<TOutput>(object inputModel)
         {
-            var type = typeof(IHandler<,>).MakeGenericType(inputModel.GetType(), typeof(TOutput));
-            //var inputType = inputModel.GetType();
-            //var outputType = typeof(TOutput);
-            //var type = typeof(IHandler<,>).MakeGenericType(inputType, outputType);
-            var thandler = _resolver(type);
-            //if (LookForBaseType && thandler == null)
-            //{
-            //    while (inputType.BaseType != typeof(o))
-            //    {
-            //        type = typeof (IHandler<,>).MakeGenericType(inputType, outputType);
-            //        thandler = _resolver(type);
-            //        if (thandler != null)
-            //            break;
-            //    }
-            //}
-            EnsureHandlerFound(thandler, type);
-            var methodName = GetMethodName(x => x.Handle(null));
-            var method = type.GetMethod(methodName);
-            return (TOutput) method.Invoke(thandler, new[] {inputModel});
+            return ExecuteImpl((dynamic)inputModel, default(TOutput));
         }
 
-        public TOutput Execute <TOutput>()
+        private TOutput ExecuteImpl<T, TOutput>(T input, TOutput _)
+        {
+            var thandler = (IHandler<T, TOutput>)_resolver(typeof(IHandler<T, TOutput>));
+            EnsureHandlerFound(thandler, typeof(T));
+            return thandler.Handle((input));
+        }
+
+        public TOutput Execute<TOutput>()
         {
             var type = typeof(IHandler<>).MakeGenericType(typeof(TOutput));
             var thandler = (IHandler<TOutput>)_resolver(type);
@@ -49,12 +35,14 @@ namespace SchoStack.Web
 
         public void Execute(object inputModel)
         {
-            var type = typeof(ICommandHandler<>).MakeGenericType(inputModel.GetType());
-            var thandler = _resolver(type);
-            EnsureHandlerFound(thandler, type);
-            var methodName = GetMethodName(x => x.Handle(null));
-            var method = type.GetMethod(methodName);
-            method.Invoke(thandler, new[] { inputModel });
+            ExecuteImpl((dynamic)inputModel);
+        }
+
+        private void ExecuteImpl<T>(T input)
+        {
+            var thandler = (ICommandHandler<T>)_resolver(typeof(ICommandHandler<T>));
+            EnsureHandlerFound(thandler, typeof(T));
+            thandler.Handle((input));
         }
 
         private void EnsureHandlerFound(object handler, Type type)
@@ -73,19 +61,6 @@ namespace SchoStack.Web
                 i++;
             }
             return json;
-        }
-
-        private string GetMethodName(Expression<Action<InvokerHelper>> method)
-        {
-            return ((MethodCallExpression) method.Body).Method.Name;
-        }
-
-        private class InvokerHelper : IHandler<object, object>
-        {
-            public object Handle(object model)
-            {
-                return new object();
-            }
         }
     }
 }

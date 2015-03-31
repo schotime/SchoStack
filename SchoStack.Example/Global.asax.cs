@@ -41,6 +41,9 @@ namespace SchoStack.Example
             {
                 scan.TheCallingAssembly();
                 scan.ConnectImplementationsToTypesClosing(typeof(IValidator<>));
+                scan.ConnectImplementationsToTypesClosing(typeof(IHandler<>));
+                scan.ConnectImplementationsToTypesClosing(typeof(IHandler<,>));
+                scan.ConnectImplementationsToTypesClosing(typeof(ICommandHandler<>));
             }));
 
             var resolver = new SmDependencyResolver(ObjectFactory.Container);
