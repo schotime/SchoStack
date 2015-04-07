@@ -56,6 +56,11 @@ namespace SchoStack.Example
                 x.ResolveActionsBy(DependencyResolver.Current.GetService);
             });
 
+            ValidatorOptions.DisplayNameResolver = (type, info, arg3) =>
+            {
+                return info.Name + "_i18n";
+            };
+
             HtmlConventionFactory.Add(new DefaultHtmlConventions());
             HtmlConventionFactory.Add(new DataAnnotationHtmlConventions());
             HtmlConventionFactory.Add(new FluentValidationHtmlConventions(new FluentValidatorFinder(resolver)));
