@@ -58,7 +58,7 @@ namespace SchoStack.Web.Conventions
             var result = propertyValidators.FirstOrDefault(x => x.PropertyValidator is EqualValidator);
             if (result != null)
             {
-                var equal = result.As<EqualValidator>();
+                var equal = result.PropertyValidator.As<EqualValidator>();
                 MessageFormatter formatter = new MessageFormatter()
                     .AppendPropertyName(result.DisplayName)
                     .AppendArgument("ComparisonValue", equal.ValueToCompare);
@@ -134,7 +134,7 @@ namespace SchoStack.Web.Conventions
 
         public void AddRegexData(IEnumerable<PropertyValidatorResult> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
-            var result = propertyValidators.FirstOrDefault(x => x.PropertyValidator.GetType() == typeof(RegularExpressionValidator));
+            var result = propertyValidators.FirstOrDefault(x => x.PropertyValidator is RegularExpressionValidator);
 
             if (result != null && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
             {
@@ -149,7 +149,7 @@ namespace SchoStack.Web.Conventions
 
         public void AddEmailData(IEnumerable<PropertyValidatorResult> propertyValidators, HtmlTag htmlTag, RequestData requestData)
         {
-            var result = propertyValidators.FirstOrDefault(x => x.PropertyValidator.GetType() == typeof(EmailValidator));
+            var result = propertyValidators.FirstOrDefault(x => x.PropertyValidator is EmailValidator);
             if (result != null)
             {
                 if (requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
