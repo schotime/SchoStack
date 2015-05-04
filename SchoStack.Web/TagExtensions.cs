@@ -102,7 +102,7 @@ namespace SchoStack.Web.Html
 
         public static HtmlTag Tag(this HtmlHelper htmlHelper, string tagName)
         {
-            var tag = TagGen().GenerateTagFor(htmlHelper.ViewContext, () => new HtmlTag("tag"));
+            var tag = TagGen().GenerateTagFor(htmlHelper.ViewContext, () => new HtmlTag(tagName));
             return tag;
         }
 

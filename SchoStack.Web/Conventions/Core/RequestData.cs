@@ -91,6 +91,18 @@ namespace SchoStack.Web.Conventions.Core
 
         public Type InputType { get; set; }
 
+        public virtual T TryGetValue<T>()
+        {
+            try
+            {
+                return GetValue<T>();
+            }
+            catch
+            {
+                return default(T);
+            }
+        }
+
         public virtual T GetValue<T>()
         {
             if (ViewContext.ViewData.Model == null)

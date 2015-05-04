@@ -59,28 +59,32 @@ namespace SchoStack.Web.Conventions
             if (result != null)
             {
                 var equal = result.PropertyValidator.As<EqualValidator>();
-                MessageFormatter formatter = new MessageFormatter()
-                    .AppendPropertyName(result.DisplayName)
-                    .AppendArgument("ComparisonValue", equal.ValueToCompare);
-
-                string message = formatter.BuildMessage(equal.ErrorMessageSource.GetString());
-
-                if (_msUnobtrusive)
+                
+                if (equal.MemberToCompare != null)
                 {
-                    htmlTag.Data("val", true);
-                    htmlTag.Data("val-equalto", message);
-                    if (request.Accessor.PropertyNames.Length > 1)
-                        htmlTag.Data("val-equalto-other", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
+                    MessageFormatter formatter = new MessageFormatter()
+                        .AppendPropertyName(result.DisplayName)
+                        .AppendArgument("ComparisonValue", equal.MemberToCompare.Name);
+                    
+                    string message = formatter.BuildMessage(equal.ErrorMessageSource.GetString());
+
+                    if (_msUnobtrusive)
+                    {
+                        htmlTag.Data("val", true);
+                        htmlTag.Data("val-equalto", message);
+                        if (request.Accessor.PropertyNames.Length > 1)
+                            htmlTag.Data("val-equalto-other", request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
+                        else
+                            htmlTag.Data("val-equalto-other", "*." + equal.MemberToCompare.Name);
+                    }
                     else
-                        htmlTag.Data("val-equalto-other", "*." + equal.MemberToCompare.Name);
-                }
-                else
-                {
-                    htmlTag.Data("msg-equalto", message);
-                    if (request.Accessor.PropertyNames.Length > 1)
-                        htmlTag.Data("rule-equalto", "#" + request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
-                    else
-                        htmlTag.Data("rule-equalto", "#" + equal.MemberToCompare.Name);
+                    {
+                        htmlTag.Data("msg-equalto", message);
+                        if (request.Accessor.PropertyNames.Length > 1)
+                            htmlTag.Data("rule-equalto", "#" + request.Id.Replace("_" + request.Accessor.Name, "") + "_" + equal.MemberToCompare.Name);
+                        else
+                            htmlTag.Data("rule-equalto", "#" + equal.MemberToCompare.Name);
+                    }
                 }
             }
         }
@@ -138,7 +142,7 @@ namespace SchoStack.Web.Conventions
 
             if (result != null && requestData.ViewContext.UnobtrusiveJavaScriptEnabled)
             {
-                var regex = result.As<RegularExpressionValidator>();
+                var regex = result.PropertyValidator.As<RegularExpressionValidator>();
                 var msg = GetMessage(requestData, result) ?? string.Format("The value did not match the regular expression '{0}'", regex.Expression);
                 if (_msUnobtrusive)
                     htmlTag.Data("val", true).Data("val-regex", msg).Data("val-regex-pattern", regex.Expression);

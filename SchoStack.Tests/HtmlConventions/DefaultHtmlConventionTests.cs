@@ -377,6 +377,23 @@ namespace SchoStack.Tests.HtmlConventions
             }
         }
 
+        [Test]
+        public void IfAttributeOnValueTypeArray()
+        {
+            var model = new TestViewModel()
+            {
+                DateTimeArrayAtt = new[] { new DateTime(2015, 05, 20), DateTime.Now }
+            };
+
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+
+            using (helper.Profile(new ArrayConvProfile()))
+            {
+                var tag = helper.Display(x => x.DateTimeArrayAtt[0]);
+                tag.Text().ShouldBe(typeof(TestDateTimeArrayAttribute).Name);
+            }
+        }
+
         public class ArrayConvProfile : HtmlProfile
         {
             public ArrayConvProfile()
@@ -392,6 +409,11 @@ namespace SchoStack.Tests.HtmlConventions
                     {
                         var val = data.GetValue<DateTime>();
                         tag.Text(val.ToString("yy-MM-dd"));
+                    });
+
+                    Displays.IfAttribute<TestDateTimeArrayAttribute>().Modify((tag, data, att) =>
+                    {
+                        tag.Text(att.GetType().Name);
                     });
                 }
             }

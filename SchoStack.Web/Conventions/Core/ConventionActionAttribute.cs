@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using FubuCore.Reflection;
 using HtmlTags;
 
 namespace SchoStack.Web.Conventions.Core
@@ -16,7 +18,7 @@ namespace SchoStack.Web.Conventions.Core
         {
             Builders.Add(new Builder(Condition, req =>
             {
-                var attribute = (TAttribute)req.Accessor.InnerProperty.GetCustomAttributes(typeof(TAttribute), true).First();
+                var attribute = (TAttribute)TagConventions.GetPropertyInfo(req.Accessor).GetCustomAttributes(typeof(TAttribute), true).First();
                 return builder(req, attribute);
             }));
         }
@@ -25,7 +27,7 @@ namespace SchoStack.Web.Conventions.Core
         {
             Builders.Add(new Builder(Condition, (req, pipe) =>
             {
-                var attribute = (TAttribute)req.Accessor.InnerProperty.GetCustomAttributes(typeof(TAttribute), true).First();
+                var attribute = (TAttribute)TagConventions.GetPropertyInfo(req.Accessor).GetCustomAttributes(typeof(TAttribute), true).First();
                 return builder(req, attribute, pipe);
             }));
         }
@@ -34,7 +36,7 @@ namespace SchoStack.Web.Conventions.Core
         {
             Modifiers.Add(new Modifier(Condition, (tag, req) =>
             {
-                var attribute = (TAttribute)req.Accessor.InnerProperty.GetCustomAttributes(typeof(TAttribute), true).First();
+                var attribute = (TAttribute)TagConventions.GetPropertyInfo(req.Accessor).GetCustomAttributes(typeof(TAttribute), true).First();
                 modifier(tag, req, attribute);
             }));
         }

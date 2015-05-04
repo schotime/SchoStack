@@ -47,7 +47,11 @@ namespace SchoStack.Tests.HtmlConventions
         public string NameWithNumber2 { get; set; }
 
         public ArrayType[] ArrayTypes { get; set; }
+        
         public DateTime[] DateTimeArray { get; set; }
+
+        [TestDateTimeArray]
+        public DateTime[] DateTimeArrayAtt { get; set; }
 
         [BindAlias("VA")]
         public string Alias { get; set; }
@@ -57,6 +61,11 @@ namespace SchoStack.Tests.HtmlConventions
 
         [BindAlias("VNLIST")]
         public List<NestedAlias> NestedList { get; set; }
+    }
+
+    public class TestDateTimeArrayAttribute : Attribute
+    {
+        
     }
 
     public class NestedAlias
