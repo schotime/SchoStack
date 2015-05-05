@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
 using FluentValidation;
+using FubuCore.Reflection;
 using Moq;
 using NUnit.Framework;
 using Promaster.Tests;
@@ -18,15 +20,17 @@ namespace SchoStack.Tests.HtmlConventions
 {
     public class ValidationConventionTests
     {
+        private Mock<IDependencyResolver> _dep;
+
         public ValidationConventionTests()
         {
             HtmlConventionFactory.Add(new DefaultHtmlConventions());
             HtmlConventionFactory.Add(new DataAnnotationHtmlConventions());
-            var dep = new Mock<IDependencyResolver>();
+            _dep = new Mock<IDependencyResolver>();
             var dict = new Dictionary<Type, IValidator>();
             dict.Add(typeof(IValidator<TestInputModel>), new TestInputValidator());
-            dep.Setup(x => x.GetService(It.IsAny<Type>())).Returns<Type>(x => dict[x]);
-            HtmlConventionFactory.Add(new FluentValidationHtmlConventions(new FluentValidatorFinder(dep.Object)));
+            _dep.Setup(x => x.GetService(It.IsAny<Type>())).Returns<Type>(x => dict[x]);
+            HtmlConventionFactory.Add(new FluentValidationHtmlConventions(new FluentValidatorFinder(_dep.Object)));
 
             HtmlConventionFactory.Add(new CombinationConventions());
         }
@@ -235,6 +239,32 @@ namespace SchoStack.Tests.HtmlConventions
             helper.ViewContext.HttpContext.Items[TagGenerator.FORMINPUTTYPE] = typeof(TestInputModel);
             var tag = helper.Input(x => x.ArrayTypes[0].IntProp);
             tag.HasClass("required").ShouldBe(true);
+        }
+
+        [Test]
+        public void FindNestedNames()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+
+            var finder = new FluentValidatorFinder(_dep.Object);
+            var vals = finder.FindValidators(RequestData.BuildRequestData(helper.ViewContext, ReflectionHelper.GetAccessor<TestViewModel>(x => x.Nested.ReallyLongName), typeof(TestInputModel)));
+
+            vals.Count().ShouldBe(1);
+            vals.First().DisplayName.ShouldBe("ReallyLongLongName");
+        }
+
+        [Test]
+        public void FindNestedNamesWithWhen()
+        {
+            var model = new TestViewModel();
+            var helper = MvcMockHelpers.GetHtmlHelper(model);
+
+            var finder = new FluentValidatorFinder(_dep.Object);
+            var vals = finder.FindValidators(RequestData.BuildRequestData(helper.ViewContext, ReflectionHelper.GetAccessor<TestViewModel>(x => x.Nested1.ReallyLongName), typeof(TestInputModel)));
+
+            vals.Count().ShouldBe(1);
+            vals.First().DisplayName.ShouldBe("ReallyLongLongNameWhen");
         }
     }
 }

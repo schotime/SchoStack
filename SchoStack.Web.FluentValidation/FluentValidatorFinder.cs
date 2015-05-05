@@ -59,12 +59,7 @@ namespace SchoStack.Web.FluentValidation
 
             foreach (var inlineval in vals)
             {
-                var valtype = inlineval.GetType();
-                IValidator val = null;
-                if (valtype == typeof(ChildCollectionValidatorAdaptor))
-                    val = ((ChildCollectionValidatorAdaptor)inlineval).Validator;
-                else if (valtype == typeof(ChildValidatorAdaptor))
-                    val = ((ChildValidatorAdaptor)inlineval).Validator;
+                IValidator val = GetValidator(inlineval, null);
 
                 if (i == propertyInfo.Count - 1)
                     propertyValidators.Add(new PropertyValidatorResult(inlineval, name));
@@ -73,10 +68,22 @@ namespace SchoStack.Web.FluentValidation
                     continue;
 
                 var morevals = GetNestedPropertyValidators(val.CreateDescriptor(), propertyInfo, i + 1);
-                propertyValidators.AddRange(morevals.Select(x => new PropertyValidatorResult(x.PropertyValidator, name)));
+                propertyValidators.AddRange(morevals.Select(x => new PropertyValidatorResult(x.PropertyValidator, x.DisplayName)));
             }
 
             return propertyValidators;
+        }
+
+        private static IValidator GetValidator(IPropertyValidator inlineval, IValidator val)
+        {
+            var valtype = inlineval.GetType();
+            if (valtype == typeof (ChildCollectionValidatorAdaptor))
+                val = ((ChildCollectionValidatorAdaptor) inlineval).Validator;
+            else if (valtype == typeof (ChildValidatorAdaptor))
+                val = ((ChildValidatorAdaptor) inlineval).Validator;
+            else if (valtype == typeof (DelegatingValidator))
+                val = GetValidator(((DelegatingValidator) inlineval).InnerValidator, val);
+            return val;
         }
 
         private IValidator ResolveValidator(Type modelType)

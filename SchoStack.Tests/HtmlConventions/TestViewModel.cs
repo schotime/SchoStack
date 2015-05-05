@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Web.Mvc;
 using FluentValidation;
 using SchoStack.Web;
@@ -61,6 +62,8 @@ namespace SchoStack.Tests.HtmlConventions
 
         [BindAlias("VNLIST")]
         public List<NestedAlias> NestedList { get; set; }
+
+        public NestedAlias Nested1 { get; set; }
     }
 
     public class TestDateTimeArrayAttribute : Attribute
@@ -132,6 +135,8 @@ namespace SchoStack.Tests.HtmlConventions
         [BindAlias("NEST")]
         public NestedAlias Nested { get; set; }
 
+        public NestedAlias Nested1 { get; set; }
+
         [BindAlias("NLIST")]
         public List<NestedAlias> NestedList { get; set; }
     }
@@ -170,6 +175,18 @@ namespace SchoStack.Tests.HtmlConventions
                 {
                     v => v.RuleFor(y => y.IntProp).NotEmpty()
                 });
+
+            RuleFor(x => x.Nested)
+                .SetValidator(new InlineValidator<NestedAlias>()
+                {
+                    x => x.RuleFor(z => z.ReallyLongName).NotEmpty().WithName("ReallyLongLongName")
+                });
+
+            RuleFor(x => x.Nested1)
+                .SetValidator(new InlineValidator<NestedAlias>()
+                {
+                    x => x.RuleFor(z => z.ReallyLongName).NotEmpty().WithName("ReallyLongLongNameWhen")
+                }).When(x => x.IsCorrect);
         }
     }
 }
