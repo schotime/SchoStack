@@ -47,14 +47,14 @@ namespace SchoStack.Web.Html
             return tag.GenerateLabelFor(helper.ViewContext, expression);
         }
 
-        public static LiteralTag ValidationSummary(this HtmlHelper htmlHelper)
+        public static HtmlTag ValidationSummary(this HtmlHelper htmlHelper)
         {
             return ValidationSummary(htmlHelper, false);
         }
 
-        public static LiteralTag ValidationSummary(this HtmlHelper htmlHelper, bool excludePropertyErrors)
+        public static HtmlTag ValidationSummary(this HtmlHelper htmlHelper, bool excludePropertyErrors)
         {
-            var val = ValidationExtensions.ValidationSummary(htmlHelper, excludePropertyErrors);
+            var val = ValidationExtensions.ValidationSummary(htmlHelper, excludePropertyErrors, null, new {role = "alert"});
             if (val != null)
                 return new LiteralTag(val.ToHtmlString());
 
@@ -74,9 +74,12 @@ namespace SchoStack.Web.Html
         public static LiteralTag ValidationMessage<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string message)
         {
             var reqName = RequestData.GetName(ReflectionHelper.GetAccessor(expression));
-            var val = ValidationExtensions.ValidationMessage(htmlHelper, reqName, message);
+            var errors = htmlHelper.ViewData.ModelState.ContainsKey(reqName) && htmlHelper.ViewData.ModelState[reqName].Errors.Any();
+            var val = ValidationExtensions.ValidationMessage(htmlHelper, reqName, message, errors ? new { role = "alert" } : null);
             if (val != null)
+            {
                 return new LiteralTag(val.ToHtmlString());
+            }
             return new LiteralTag("");
         }
 
@@ -244,6 +247,18 @@ namespace SchoStack.Web.Html.UrlForm
             return Form(htmlHelper, model, begin => { });
         }
 
+        public static SchoStackForm<TRet> Form<T, TRet>(this HtmlHelper<T> htmlHelper, Expression<Func<T, TRet>> formModel) where TRet:new()
+        {
+            var oldmodel = htmlHelper.ViewContext.ViewData.Model;
+            var newmodel = formModel.Compile()((T) oldmodel);
+            Form<TRet>(htmlHelper);
+            htmlHelper.ViewContext.ViewData.Model = newmodel;
+            var viewDataDictionary = new ViewDataDictionary(htmlHelper.ViewContext.ViewData);
+            viewDataDictionary.Model = newmodel;
+            var container = new MyDataContainer {ViewData = viewDataDictionary};
+            return new SchoStackForm<TRet>(oldmodel, htmlHelper.ViewContext, new HtmlHelper<TRet>(htmlHelper.ViewContext, container));
+        }
+
         public static MvcForm Form<TInput>(this HtmlHelper htmlHelper, TInput model, Action<FormTag> modifier)
         {
             var urlHelper = new UrlHelper(htmlHelper.ViewContext.RequestContext);
@@ -255,6 +270,69 @@ namespace SchoStack.Web.Html.UrlForm
         {
             htmlHelper.ViewContext.HttpContext.Items.Remove(TagGenerator.FORMINPUTTYPE);
             return new LiteralTag("</form>");
+        }
+    }
+
+    public class MyDataContainer : IViewDataContainer
+    {
+        public ViewDataDictionary ViewData { get; set; }
+    }
+
+    public class SchoStackForm<TModel> : InputTypeMvcForm
+    {
+        private readonly object _model;
+        private readonly HtmlHelper<TModel> _helper;
+
+        public SchoStackForm(object model, ViewContext viewContext, HtmlHelper<TModel> helper) : base(viewContext)
+        {
+            _model = model;
+            _helper = helper;
+        }
+
+        public HtmlTag Input(Expression<Func<TModel, object>> propExpression)
+        {
+            return _helper.Input(propExpression);
+        }
+
+        public HtmlTag Display(Expression<Func<TModel, object>> propExpression)
+        {
+            return _helper.Display(propExpression);
+        }
+
+        public HtmlTag Label(Expression<Func<TModel, object>> propExpression)
+        {
+            return _helper.Label(propExpression);
+        }
+
+        public HtmlTag Submit(string text)
+        {
+            return _helper.Submit(text);
+        }
+
+        public IEnumerable<LoopItem<TModel, TData>> Loop<TData>(Expression<Func<TModel, IEnumerable<TData>>> list)
+        {
+            return _helper.Loop(list);
+        }
+
+        public HtmlTag ValidationMessage(Expression<Func<TModel, object>> propExpression)
+        {
+            return _helper.ValidationMessage(propExpression);
+        }
+
+        public HtmlTag ValidationMessage(Expression<Func<TModel, object>> propExpression, string message)
+        {
+            return _helper.ValidationMessage(propExpression, message);
+        }
+
+        public HtmlTag ValidationSummary(bool excludePropertyErrors = false)
+        {
+            return _helper.ValidationSummary(excludePropertyErrors);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _helper.ViewContext.ViewData.Model = _model;
+            base.Dispose(disposing);
         }
     }
 }
