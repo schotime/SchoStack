@@ -59,10 +59,10 @@ namespace SchoStack.Web.FluentValidation
 
             foreach (var inlineval in vals)
             {
-                IValidator val = GetValidator(inlineval, null);
-
                 if (i == propertyInfo.Count - 1)
                     propertyValidators.Add(new PropertyValidatorResult(inlineval, name));
+
+                IValidator val = GetValidator(inlineval, null);
 
                 if (val == null)
                     continue;

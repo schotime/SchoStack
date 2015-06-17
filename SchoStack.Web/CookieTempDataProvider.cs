@@ -41,6 +41,7 @@ namespace SchoStack.Web
                 cookie.Value = string.Empty;
                 cookie.Path = controllerContext.HttpContext.Request.ApplicationPath;
                 cookie.Secure = controllerContext.HttpContext.Request.IsSecureConnection;
+                cookie.HttpOnly = true;
 
                 if (_httpContext.Response != null && _httpContext.Response.Cookies != null)
                 {
@@ -59,6 +60,7 @@ namespace SchoStack.Web
             {
                 var cookied = new HttpCookie(TempDataCookieKey)
                 {
+                    HttpOnly = true,
                     Expires = DateTime.Now.AddDays(-30),
                     Path = controllerContext.HttpContext.Request.ApplicationPath,
                     Secure = controllerContext.HttpContext.Request.IsSecureConnection
