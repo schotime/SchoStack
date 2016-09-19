@@ -11,3 +11,4 @@ TestResults
 connectionStrings.config
 rh.exe
 dev_*
+.vs
