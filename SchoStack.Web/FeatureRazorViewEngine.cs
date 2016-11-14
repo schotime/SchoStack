@@ -17,7 +17,9 @@ namespace SchoStack.Web
             ViewLocationFormats = featureLocation.Where(x => x.EndsWith(".cshtml")).ToArray();
 
             var partial = "~/%base%/{1}/{0}.cshtml".Replace("%base%", baseFolder);
-            var partialFeatureLocation = new List<string> {partial};
+            var editors = "~/%base%/shared/EditorTemplates/{0}.cshtml".Replace("%base%", baseFolder);
+            var displays = "~/%base%/shared/DisplayTemplates/{0}.cshtml".Replace("%base%", baseFolder);
+            var partialFeatureLocation = new List<string> { partial,shared,editors,displays };
             partialFeatureLocation.AddRange(PartialViewLocationFormats);
             var newlist = new List<string>();
             foreach (var item in partialFeatureLocation.Where(x => x.EndsWith(".cshtml")))
