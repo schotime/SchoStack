@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using FubuCore.Reflection;
+using Baseline.Reflection;
 using SchoStack.Web.Conventions.Core;
 
 namespace SchoStack.Web

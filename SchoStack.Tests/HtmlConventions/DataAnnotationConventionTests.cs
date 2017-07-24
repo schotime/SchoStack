@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
-using FubuCore.Reflection;
+using Baseline.Reflection;
 using NUnit.Framework;
 using Promaster.Tests;
 using SchoStack.Web.Conventions;

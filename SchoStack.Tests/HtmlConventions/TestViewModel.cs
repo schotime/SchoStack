@@ -100,7 +100,7 @@ namespace SchoStack.Tests.HtmlConventions
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Compare("Password", ErrorMessage = "The Error")]
+        [System.ComponentModel.DataAnnotations.Compare("Password", ErrorMessage = "The Error")]
         public string PasswordConfirm { get; set; }
 
         [DataType(DataType.Text)]
