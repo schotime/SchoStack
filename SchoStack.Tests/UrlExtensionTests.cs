@@ -68,7 +68,7 @@ namespace SchoStack.Tests
             RouteTable.Routes.Add(typeof(TestUrl).FullName, new Route("fakeUrl/{Age}/edit", null));
 
             var url = MvcMockHelpers.GetUrlHelper("~/fakeUrl");
-            url.For(new TestUrl()).ShouldBe("/fakeUrl/0/edit");
+            url.For(new TestUrl() { Age = 0 } ).ShouldBe("/fakeUrl/0/edit");
         }
 
         public class TestUrl 
@@ -76,7 +76,7 @@ namespace SchoStack.Tests
             public Guid Id { get; set; }
             
             [RouteParam]
-            public int Age { get; set; }
+            public int? Age { get; set; }
         }
     }
 }

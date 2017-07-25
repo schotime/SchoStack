@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Baseline;
 using FluentValidation;
 using FluentValidation.Internal;
 using FluentValidation.Validators;
-using FubuCore;
 using HtmlTags;
 using SchoStack.Web.Conventions.Core;
 using SchoStack.Web.FluentValidation;
